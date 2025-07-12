@@ -1,0 +1,33 @@
+QListWidget {
+    background-color: #048;
+    border: 2px solid #037;
+}
+
+QListWidget::item {
+    background-color: #fff;
+    color: #000;
+    border-radius: 5px;
+}
+
+QListWidget::item:active {
+    background-color: #ddd;
+}
+
+QLabel#task-label {
+    color: #000;
+}
+
+QPushButton#task-button {
+    background-color: #048;
+    border: 2px solid #037;
+}
+
+QPushButton#task-button:hover{
+    background-color: #059;
+    border-color: #048;
+}
+
+QTextEdit {
+    background-color: #fff;
+    color: #000;
+}

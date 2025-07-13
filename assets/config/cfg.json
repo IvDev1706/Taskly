@@ -1,0 +1,14 @@
+{
+    "database": {
+        "bd":"taskly_bd",
+        "host":"localhost",
+        "user":"adminTaskly",
+        "password":"admin1001!",
+        "port":"5432"
+    },
+    "fonts": {
+        "text": ["Arial",12],
+        "title": ["Arial",18],
+        "elements": ["Arial",10]
+    }
+}

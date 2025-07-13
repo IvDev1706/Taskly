@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import (QWidget, QTabWidget)
 from .TaskView import TaskTab
+from utils.variables import FNTELEMENT
 
 #clase de ventana principal
 class MainWindow(QWidget):
@@ -38,6 +39,7 @@ class MainWindow(QWidget):
         
         #configuracion del tabBar
         self.tabBar.setFixedSize(self.size())
+        self.tabBar.setFont(FNTELEMENT)
         
     def __build(self)->None:
         #adiciones al tab

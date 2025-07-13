@@ -31,3 +31,7 @@ QTextEdit {
     background-color: #fff;
     color: #000;
 }
+
+QDialog#form-cont {
+    background-color: #59A;
+}

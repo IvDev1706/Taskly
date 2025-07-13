@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QTextEdit, QComboBox, QDateEdit)
 from PyQt6.QtGui import QFont
-from utils.variables import STATUS, PRIORITIES
+from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
 from datetime import date
+from .Dialogs import TaskForm
 
 class TaskTab(QWidget):
     #constructor de clase
@@ -32,61 +33,62 @@ class TaskTab(QWidget):
         self.cbxStatus = QComboBox(self)
         self.cbxPriority = QComboBox(self)
         self.date = QDateEdit(self)
-        self.fntTitle = QFont('Arial',18)
-        self.fntTexto = QFont('Arial',12)
+        
+        #formlario hijo
+        self.taskForm = TaskForm(self)
         
         #metodos de ventana
         self.__config()
         self.__build()
+        self.__listenings()
         
     #metodos de ventana
     def __config(self)->None:
         #configuracion de componentes
-        self.list.setFont(self.fntTexto)
+        self.list.setFont(FNTELEMENT)
         self.list.setMaximumWidth(110)
         self.list.addItem("a task")
         
         #etiquetas
-        self.fntTitle.setBold(True)
         self.lblTitle.setText("Task title")
         self.lblTitle.setObjectName("task-label")
-        self.lblTitle.setFont(self.fntTitle)
+        self.lblTitle.setFont(FNTTITLE)
         self.lblPriority.setText("Task priority")
         self.lblPriority.setObjectName("task-label")
-        self.lblPriority.setFont(self.fntTitle)
+        self.lblPriority.setFont(FNTTITLE)
         self.lblStatus.setText("Task status")
         self.lblStatus.setObjectName("task-label")
-        self.lblStatus.setFont(self.fntTitle)
+        self.lblStatus.setFont(FNTTITLE)
         
         #campos
-        self.date.setFont(self.fntTexto)
+        self.date.setFont(FNTELEMENT)
         self.date.setEnabled(False)
         self.date.setDate(date.today())
         self.cbxStatus.addItems(STATUS.keys())
-        self.cbxStatus.setFont(self.fntTexto)
+        self.cbxStatus.setFont(FNTELEMENT)
         self.cbxStatus.setEnabled(False)
         self.cbxPriority.addItems(PRIORITIES.keys())
-        self.cbxPriority.setFont(self.fntTexto)
+        self.cbxPriority.setFont(FNTELEMENT)
         self.cbxPriority.setEnabled(False)
-        self.descText.setFont(self.fntTexto)
+        self.descText.setFont(FNTTEXTO)
         self.descText.setEnabled(False)
         
         #botones
         self.btnCreate.setText("+")
         self.btnCreate.setObjectName("task-button")
-        self.btnCreate.setFont(self.fntTexto)
+        self.btnCreate.setFont(FNTTEXTO)
         self.btnDelete.setText("-")
         self.btnDelete.setObjectName("task-button")
-        self.btnDelete.setFont(self.fntTexto)
+        self.btnDelete.setFont(FNTTEXTO)
         self.btnEdit.setText("edit")
         self.btnEdit.setObjectName("task-button")
-        self.btnEdit.setFont(self.fntTexto)
+        self.btnEdit.setFont(FNTTEXTO)
         self.btnSave.setText("save")
         self.btnSave.setObjectName("task-button")
-        self.btnSave.setFont(self.fntTexto)
+        self.btnSave.setFont(FNTTEXTO)
         self.btnComplete.setText("complete")
         self.btnComplete.setObjectName("task-button")
-        self.btnComplete.setFont(self.fntTexto)
+        self.btnComplete.setFont(FNTTEXTO)
         
     def __build(self)->None:
         #panel de botones
@@ -117,3 +119,25 @@ class TaskTab(QWidget):
         
         #añadir a la ventana
         self.setLayout(mainV)
+    
+    def __listenings(self)->None:
+        #escuchas para botones
+        self.btnCreate.clicked.connect(lambda: self.taskForm.show())
+        self.btnEdit.clicked.connect(self.editable)
+        self.btnSave.clicked.connect(self.save)
+        
+    
+    #funciones de botones
+    def editable(self)->None:
+        #poner campos editables
+        self.date.setEnabled(True)
+        self.cbxPriority.setEnabled(True)
+        self.cbxStatus.setEnabled(True)
+        self.descText.setEnabled(True)
+        
+    def save(self)->None:
+        #quitar campos editables
+        self.date.setEnabled(False)
+        self.cbxPriority.setEnabled(False)
+        self.cbxStatus.setEnabled(False)
+        self.descText.setEnabled(False)

@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (QWidget, QTabWidget)
 from .TaskView import TaskTab
 from utils.variables import FNTELEMENT
+from database.dbconnection import DBConector
 
 #clase de ventana principal
 class MainWindow(QWidget):
@@ -48,5 +49,11 @@ class MainWindow(QWidget):
     
     def __listenings(self)->None:
         pass
+    
+    def closeEvent(self, a0):
+        #cierre de conexion a bd
+        DBConector.closeConnection()
+        #cierre formal
+        super().closeEvent(a0)
         
         

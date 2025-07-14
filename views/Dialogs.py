@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QComboBox, QDateEdit, QPushButton, QLabel, QTextEdit)
 from PyQt6.QtCore import Qt
-from utils.variables import FNTTEXTO, FNTTITLE, FNTELEMENT, STATUS, PRIORITIES
+from utils.variables import FNTTEXTO, FNTTITLE, PRIORITIES
+from .Messages import warning
 from datetime import date
 
 class BaseForm(QDialog):
@@ -20,12 +21,11 @@ class BaseForm(QDialog):
         self.btnGuardar = QPushButton(self)
         self.btnGuardar.setText("guardar")
         self.btnGuardar.setObjectName("task-button")
-        self.btnGuardar.clicked.connect(self.__save)
         self.setLayout(self.mainV)
 
     #metodos a sobreescribir
     def __save(self)->None:
-        self.close()
+        pass
     
     def __clean(self)->None:
         pass
@@ -58,6 +58,10 @@ class TaskForm(BaseForm):
         #armado del formulario
         self.__build()
         
+        self.data = []
+    
+        self.btnGuardar.clicked.connect(self.__save)
+        
     def __config(self)->None:
         self.lblTitle.setFont(FNTTITLE)
         self.lblTitle.setText("Nueva tarea")
@@ -79,7 +83,9 @@ class TaskForm(BaseForm):
         self.lblDesc.setText("Descripcion:")
         self.lblDesc.setObjectName("task-label")
         self.fldId.setPlaceholderText("XXX")
+        self.fldId.setMaxLength(3)
         self.fldTitle.setPlaceholderText("Algun titulo")
+        self.fldTitle.setMaxLength(20)
         self.fldDelivery.setDate(date.today())
         self.cbxPriority.addItems(PRIORITIES.keys())
         self.descText.setPlaceholderText("Alguna descripcion")
@@ -94,3 +100,38 @@ class TaskForm(BaseForm):
         self.mainV.addWidget(self.lblDesc)
         self.mainV.addWidget(self.descText)
         self.mainV.addWidget(self.btnGuardar)
+        
+    def __save(self)->None:
+        #reseteo de data
+        self.data = []
+        
+        if self.fldId.text()=='':
+            #mensaje
+            warning(self, "Clave vacia", "No se admiten claves vacias")
+        else:
+            #capturar los datos
+            delivery = self.fldDelivery.date()
+            self.data.append(self.fldId.text())
+            self.data.append(self.fldTitle.text())
+            self.data.append(self.descText.toPlainText())
+            self.data.append(date(delivery.year(),delivery.month(),delivery.day()))
+            self.data.append(PRIORITIES[self.cbxPriority.currentData(0)])
+            
+            #limpiar y cerrar
+            self.__clean()
+            self.accept() # para cerrar la ventana en exec
+        
+    def __clean(self)->None:
+        #limpiar campos
+        self.fldId.setText('')
+        self.fldTitle.setText('')
+        self.fldDelivery.setDate(date.today())
+        self.cbxPriority.setCurrentIndex(0)
+        self.descText.setText('')
+        
+    #sobreescritura del metodo de cierre
+    def closeEvent(self, a0):
+        #limpieza
+        self.__clean()
+        #cierre formal
+        super().closeEvent(a0)

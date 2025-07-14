@@ -24,3 +24,7 @@ class DBConector:
                 return DBConector.conn
         else:
             return DBConector.conn
+        
+    def closeConnection()->None:
+        if DBConector.conn:
+            DBConector.conn.close()

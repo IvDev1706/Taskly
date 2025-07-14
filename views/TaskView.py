@@ -1,8 +1,9 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QTextEdit, QComboBox, QDateEdit)
-from PyQt6.QtGui import QFont
 from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
 from datetime import date
 from .Dialogs import TaskForm
+from models.taskModels import SimpleTask
+from database.taskAPI import TaskApi
 
 class TaskTab(QWidget):
     #constructor de clase
@@ -34,6 +35,10 @@ class TaskTab(QWidget):
         self.cbxPriority = QComboBox(self)
         self.date = QDateEdit(self)
         
+        #api de base de datos
+        self.api = TaskApi()
+        self.current = None
+        
         #formlario hijo
         self.taskForm = TaskForm(self)
         
@@ -47,7 +52,7 @@ class TaskTab(QWidget):
         #configuracion de componentes
         self.list.setFont(FNTELEMENT)
         self.list.setMaximumWidth(110)
-        self.list.addItem("a task")
+        self.list.addItems(self.api.getTaskIds())
         
         #etiquetas
         self.lblTitle.setText("Task title")
@@ -121,13 +126,39 @@ class TaskTab(QWidget):
         self.setLayout(mainV)
     
     def __listenings(self)->None:
+        #escucha de lista
+        self.list.currentItemChanged.connect(self.setTask)
+        
         #escuchas para botones
-        self.btnCreate.clicked.connect(lambda: self.taskForm.show())
+        self.btnCreate.clicked.connect(self.create)
         self.btnEdit.clicked.connect(self.editable)
         self.btnSave.clicked.connect(self.save)
         
+    #funcion de lista
+    def setTask(self)->None:
+        id = self.list.currentItem().data(0)
+        self.current = self.api.getTask(id)
+        
+        #actualizar campos
+        self.lblTitle.setText(self.current.title)
+        self.descText.setText(self.current.desc)
+        self.cbxPriority.setCurrentIndex(self.current.priority-1)
+        self.cbxStatus.setCurrentIndex(self.current.status-1)
+        self.date.setDate(self.current.delivery)
     
     #funciones de botones
+    def create(self)->None:
+        #ejecutar el formulario y esperar a que se cierre
+        if self.taskForm.exec():
+            #datos capturados
+            data = self.taskForm.data
+            #paso a modelo y guardado en bd
+            newTask = SimpleTask(*data,1)
+            self.api.createTask(newTask)
+            #agregar a la lista
+            self.list.addItem(newTask.id)
+            del newTask
+    
     def editable(self)->None:
         #poner campos editables
         self.date.setEnabled(True)

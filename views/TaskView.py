@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QTextEdit, QComboBox, QDateEdit)
 from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
+from .Messages import warning, info
 from datetime import date
 from .Dialogs import TaskForm
 from models.taskModels import SimpleTask
@@ -38,6 +39,9 @@ class TaskTab(QWidget):
         #api de base de datos
         self.api = TaskApi()
         self.current = None
+        
+        #banderas
+        self.editing = False
         
         #formlario hijo
         self.taskForm = TaskForm(self)
@@ -131,12 +135,22 @@ class TaskTab(QWidget):
         
         #escuchas para botones
         self.btnCreate.clicked.connect(self.create)
+        self.btnDelete.clicked.connect(self.delete)
         self.btnEdit.clicked.connect(self.editable)
         self.btnSave.clicked.connect(self.save)
+        self.btnComplete.clicked.connect(self.complete)
         
     #funcion de lista
     def setTask(self)->None:
-        id = self.list.currentItem().data(0)
+        #pide el item
+        item = self.list.currentItem()
+
+        #validar que exista
+        if not item:
+            return
+        
+        #obtener el id
+        id = item.data(0)
         self.current = self.api.getTask(id)
         
         #actualizar campos
@@ -148,27 +162,104 @@ class TaskTab(QWidget):
     
     #funciones de botones
     def create(self)->None:
+        #mientras se edita
+        if self.editing:
+            return
+        
         #ejecutar el formulario y esperar a que se cierre
         if self.taskForm.exec():
             #datos capturados
             data = self.taskForm.data
             #paso a modelo y guardado en bd
             newTask = SimpleTask(*data,1)
-            self.api.createTask(newTask)
-            #agregar a la lista
-            self.list.addItem(newTask.id)
+            if self.api.createTask(newTask):
+                #agregar a la lista
+                self.list.addItem(newTask.id)
+                #mensaje de exito
+                info(self, "Tarea creada", "Latarea ha sido creada")
+                
             del newTask
+            
+    def delete(self)->None:
+        #mientras se edita
+        if self.editing:
+            return
+        
+        #validar si existe el current
+        if self.current:
+            #eliminar en el api
+            if self.api.deleteTask(self.current.id):
+                #eliminar de la lista
+                self.list.takeItem(self.list.currentRow())
+                self.list.setCurrentRow(-1)
+                #limpiar los campos
+                self.lblTitle.setText('Task title')
+                self.date.setDate(date.today())
+                self.cbxPriority.setCurrentIndex(0)
+                self.cbxStatus.setCurrentIndex(0)
+                self.descText.setText('')
+                #quitar referencia
+                self.current = None
+                info(self, "Tarea eliminada","La tarea se ha eliminado")
+        else:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una tarea primero")
     
     def editable(self)->None:
-        #poner campos editables
-        self.date.setEnabled(True)
-        self.cbxPriority.setEnabled(True)
-        self.cbxStatus.setEnabled(True)
-        self.descText.setEnabled(True)
+        self.editing = True
+        #validar si existe el current
+        if self.current:
+            #poner campos editables
+            self.date.setEnabled(True)
+            self.cbxPriority.setEnabled(True)
+            self.cbxStatus.setEnabled(True)
+            self.descText.setEnabled(True)
+        else:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una tarea primero")
         
     def save(self)->None:
-        #quitar campos editables
-        self.date.setEnabled(False)
-        self.cbxPriority.setEnabled(False)
-        self.cbxStatus.setEnabled(False)
-        self.descText.setEnabled(False)
+        self.editing = False
+        #validar si existe el current
+        if self.current:
+            #quitar campos editables
+            self.date.setEnabled(False)
+            self.cbxPriority.setEnabled(False)
+            self.cbxStatus.setEnabled(False)
+            self.descText.setEnabled(False)
+            
+            #tomar los valores
+            self.current.desc = self.descText.toPlainText()
+            self.current.delivery = date(self.date.date().year(), self.date.date().month(), self.date.date().day())
+            self.current.priority = PRIORITIES[self.cbxPriority.currentText()]
+            self.current.status = STATUS[self.cbxStatus.currentText()]
+            
+            #mandar al api
+            if self.api.updateTask(self.current):
+                #mensaje de exito
+                info(self, "Tarea actualizada", "La tarea se ha actualizado")
+        else:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una tarea primero")
+            
+    def complete(self)->None:
+        #mientras se edita
+        if self.editing:
+            return
+        
+        #validar el current
+        if self.current:
+            #verificar el status
+            if self.current.status != STATUS["terminada"]:
+                self.current.status = STATUS["terminada"]
+                #completar la tarea
+                self.api.completeTask(self.current.id)
+                #cambiar en el cbx
+                self.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
+                #mensaje de exito
+                info(self, "Tarea completada", "La tarea se marco como terminada")
+            else:
+                warning(self, "Tarea completada", "La tarea ya esta completada")
+        else:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una tarea primero")

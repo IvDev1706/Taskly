@@ -57,6 +57,7 @@ class TaskApi:
             print(f"Error({e.pgcode}): {e.pgerror}")
             return None
         except IndexError as e:
+            print(f"Error: {e}")
             return None
     
     def createTask(self, task:SimpleTask)->bool:
@@ -107,6 +108,25 @@ class TaskApi:
             
             #ejecucion de sentencia
             cursor.execute(f"CALL deleteSimpleTask('{id}');")
+            
+            #cierre de transaccion
+            cursor.close()
+            self.conn.commit()
+            
+            #retorno de exito
+            return True
+        except pg.Error as e:
+            print(f"Error({e.pgcode}): {e.pgerror}")
+            return False
+        
+    def completeTask(self, id:str)->bool:
+        #manejo de error
+        try:
+            #cursor de conexion
+            cursor = self.conn.cursor()
+            
+            #ejecucion de sentencia
+            cursor.execute(f"CALL completeTask('{id}');")
             
             #cierre de transaccion
             cursor.close()

@@ -111,7 +111,7 @@ class TaskForm(BaseForm):
         else:
             #capturar los datos
             delivery = self.fldDelivery.date()
-            self.data.append(self.fldId.text())
+            self.data.append("T-"+self.fldId.text())
             self.data.append(self.fldTitle.text())
             self.data.append(self.descText.toPlainText())
             self.data.append(date(delivery.year(),delivery.month(),delivery.day()))

@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QTextEdit, QComboBox, QDateEdit)
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit)
 from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
 from .Messages import warning, info
 from datetime import date
@@ -29,8 +29,10 @@ class TaskTab(QWidget):
         self.btnSave = QPushButton(self)
         self.btnComplete = QPushButton(self)
         self.lblTitle = QLabel(self)
+        self.lblDelivery = QLabel(self)
         self.lblPriority = QLabel(self)
         self.lblStatus = QLabel(self)
+        self.fldTitle = QLineEdit(self)
         self.descText = QTextEdit(self)
         self.cbxStatus = QComboBox(self)
         self.cbxPriority = QComboBox(self)
@@ -62,6 +64,9 @@ class TaskTab(QWidget):
         self.lblTitle.setText("Task title")
         self.lblTitle.setObjectName("task-label")
         self.lblTitle.setFont(FNTTITLE)
+        self.lblDelivery.setText("Task delivery")
+        self.lblDelivery.setFont(FNTTITLE)
+        self.lblDelivery.setObjectName("task-label")
         self.lblPriority.setText("Task priority")
         self.lblPriority.setObjectName("task-label")
         self.lblPriority.setFont(FNTTITLE)
@@ -70,6 +75,8 @@ class TaskTab(QWidget):
         self.lblStatus.setFont(FNTTITLE)
         
         #campos
+        self.fldTitle.setFont(FNTELEMENT)
+        self.fldTitle.setEnabled(False)
         self.date.setFont(FNTELEMENT)
         self.date.setEnabled(False)
         self.date.setDate(date.today())
@@ -113,12 +120,14 @@ class TaskTab(QWidget):
         mainH.addWidget(self.list)
         infoG = QGridLayout()
         infoG.addWidget(self.lblTitle,0,0)
-        infoG.addWidget(self.date,1,0)
-        infoG.addWidget(self.lblPriority,0,1)
-        infoG.addWidget(self.cbxPriority,1,1)
-        infoG.addWidget(self.lblStatus,0,2)
-        infoG.addWidget(self.cbxStatus,1,2)
-        infoG.addWidget(self.descText,2,0,1,3)
+        infoG.addWidget(self.fldTitle,1,0)
+        infoG.addWidget(self.lblDelivery,0,1)
+        infoG.addWidget(self.date,1,1)
+        infoG.addWidget(self.lblPriority,0,2)
+        infoG.addWidget(self.cbxPriority,1,2)
+        infoG.addWidget(self.lblStatus,0,3)
+        infoG.addWidget(self.cbxStatus,1,3)
+        infoG.addWidget(self.descText,2,0,1,4)
         mainH.addLayout(infoG)
         
         #ventana principal
@@ -154,7 +163,7 @@ class TaskTab(QWidget):
         self.current = self.api.getTask(id)
         
         #actualizar campos
-        self.lblTitle.setText(self.current.title)
+        self.fldTitle.setText(self.current.title.strip())
         self.descText.setText(self.current.desc)
         self.cbxPriority.setCurrentIndex(self.current.priority-1)
         self.cbxStatus.setCurrentIndex(self.current.status-1)
@@ -210,6 +219,7 @@ class TaskTab(QWidget):
         #validar si existe el current
         if self.current:
             #poner campos editables
+            self.fldTitle.setEnabled(True)
             self.date.setEnabled(True)
             self.cbxPriority.setEnabled(True)
             self.cbxStatus.setEnabled(True)
@@ -223,12 +233,14 @@ class TaskTab(QWidget):
         #validar si existe el current
         if self.current:
             #quitar campos editables
+            self.fldTitle.setEnabled(False)
             self.date.setEnabled(False)
             self.cbxPriority.setEnabled(False)
             self.cbxStatus.setEnabled(False)
             self.descText.setEnabled(False)
             
             #tomar los valores
+            self.current.title = self.fldTitle.text()
             self.current.desc = self.descText.toPlainText()
             self.current.delivery = date(self.date.date().year(), self.date.date().month(), self.date.date().day())
             self.current.priority = PRIORITIES[self.cbxPriority.currentText()]

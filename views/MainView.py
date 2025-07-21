@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import (QWidget, QTabWidget)
 from .TaskView import TaskTab
+from .ProjectView import ProjectTab
 from utils.variables import FNTELEMENT
 from database.dbconnection import DBConector
 
@@ -45,7 +46,7 @@ class MainWindow(QWidget):
     def __build(self)->None:
         #adiciones al tab
         self.tabBar.addTab(TaskTab(self.tabBar), "Tareas")
-        self.tabBar.addTab(None, "Proyectos")
+        self.tabBar.addTab(ProjectTab(self.tabBar), "Proyectos")
     
     def __listenings(self)->None:
         pass

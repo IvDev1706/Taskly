@@ -71,7 +71,7 @@ class TaskForm(BaseForm):
         self.lblId.setText("ID (3 chars.):")
         self.lblId.setObjectName("task-label")
         self.lblTaskTitle.setFont(FNTTEXTO)
-        self.lblTaskTitle.setText("Ttitulo:")
+        self.lblTaskTitle.setText("Titulo:")
         self.lblTaskTitle.setObjectName("task-label")
         self.lblDelivery.setFont(FNTTEXTO)
         self.lblDelivery.setText("fecha de entrega:")
@@ -127,6 +127,103 @@ class TaskForm(BaseForm):
         self.fldTitle.setText('')
         self.fldDelivery.setDate(date.today())
         self.cbxPriority.setCurrentIndex(0)
+        self.descText.setText('')
+        
+    #sobreescritura del metodo de cierre
+    def closeEvent(self, a0):
+        #limpieza
+        self.__clean()
+        #cierre formal
+        super().closeEvent(a0)
+        
+class ProjectForm(BaseForm):
+    #constructor de clase
+    def __init__(self, parent)->None:
+        #instancia de padre
+        super().__init__(parent)
+        
+        #titulo
+        super().setWindowTitle("New Project")
+        
+        #campos
+        self.lblTitle = QLabel(self)
+        self.lblId = QLabel(self)
+        self.fldId = QLineEdit(self)
+        self.lblName = QLabel(self)
+        self.fldName = QLineEdit(self)
+        self.lblDelivery = QLabel(self)
+        self.date = QDateEdit(self)
+        self.lblDesc = QLabel(self)
+        self.descText = QTextEdit(self)
+        
+        #datos de formulario
+        self.data = []
+        
+        #metodos de ventana
+        self.__config()
+        self.__build()
+        
+        #escucha de boton
+        self.btnGuardar.clicked.connect(self.__save)
+    
+    def __config(self)->None:
+        self.lblTitle.setFont(FNTTITLE)
+        self.lblTitle.setText("Nuevo proyecto")
+        self.lblTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lblTitle.setObjectName("task-label")
+        self.lblId.setFont(FNTTEXTO)
+        self.lblId.setText("ID (3 chars.):")
+        self.lblId.setObjectName("task-label")
+        self.lblName.setFont(FNTTEXTO)
+        self.lblName.setText("Nombre:")
+        self.lblName.setObjectName("task-label")
+        self.lblDelivery.setFont(FNTTEXTO)
+        self.lblDelivery.setText("fecha de entrega:")
+        self.lblDelivery.setObjectName("task-label")
+        self.lblDesc.setFont(FNTTEXTO)
+        self.lblDesc.setText("Descripcion:")
+        self.lblDesc.setObjectName("task-label")
+        self.fldId.setPlaceholderText("XXX")
+        self.fldId.setMaxLength(3)
+        self.fldName.setPlaceholderText("Algun nombre")
+        self.fldName.setMaxLength(30)
+        self.date.setDate(date.today())
+        self.descText.setPlaceholderText("Alguna descripcion")
+        
+    def __build(self)->None:
+        self.mainV.addWidget(self.lblTitle)
+        self.formL.addRow(self.lblId,self.fldId)
+        self.formL.addRow(self.lblName, self.fldName)
+        self.formL.addRow(self.lblDelivery, self.date)
+        self.mainV.addLayout(self.formL)
+        self.mainV.addWidget(self.lblDesc)
+        self.mainV.addWidget(self.descText)
+        self.mainV.addWidget(self.btnGuardar)
+        
+    def __save(self)->None:
+        #reseteo de data
+        self.data = []
+        
+        if self.fldId.text()=='':
+            #mensaje
+            warning(self, "Clave vacia", "No se admiten claves vacias")
+        else:
+            #capturar los datos
+            delivery = self.date.date()
+            self.data.append("P-"+self.fldId.text())
+            self.data.append(self.fldName.text())
+            self.data.append(self.descText.toPlainText())
+            self.data.append(date(delivery.year(),delivery.month(),delivery.day()))
+            
+            #limpiar y cerrar
+            self.__clean()
+            self.accept() # para cerrar la ventana en exec
+        
+    def __clean(self)->None:
+        #limpiar campos
+        self.fldId.setText('')
+        self.fldName.setText('')
+        self.date.setDate(date.today())
         self.descText.setText('')
         
     #sobreescritura del metodo de cierre

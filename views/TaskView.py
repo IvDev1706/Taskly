@@ -143,11 +143,11 @@ class TaskTab(QWidget):
         self.list.currentItemChanged.connect(self.setTask)
         
         #escuchas para botones
-        self.btnCreate.clicked.connect(self.create)
-        self.btnDelete.clicked.connect(self.delete)
-        self.btnEdit.clicked.connect(self.editable)
-        self.btnSave.clicked.connect(self.save)
-        self.btnComplete.clicked.connect(self.complete)
+        self.btnCreate.clicked.connect(self.createT)
+        self.btnDelete.clicked.connect(self.deleteT)
+        self.btnEdit.clicked.connect(self.editableT)
+        self.btnSave.clicked.connect(self.saveT)
+        self.btnComplete.clicked.connect(self.completeT)
         
     #funcion de lista
     def setTask(self)->None:
@@ -170,7 +170,7 @@ class TaskTab(QWidget):
         self.date.setDate(self.current.delivery)
     
     #funciones de botones
-    def create(self)->None:
+    def createT(self)->None:
         #mientras se edita
         if self.editing:
             return
@@ -185,11 +185,10 @@ class TaskTab(QWidget):
                 #agregar a la lista
                 self.list.addItem(newTask.id)
                 #mensaje de exito
-                info(self, "Tarea creada", "Latarea ha sido creada")
-                
+                info(self, "Tarea creada", "La tarea ha sido creada")
             del newTask
             
-    def delete(self)->None:
+    def deleteT(self)->None:
         #mientras se edita
         if self.editing:
             return
@@ -214,10 +213,10 @@ class TaskTab(QWidget):
             #advertencia
             warning(self, "Sin seleccion", "Seleccione una tarea primero")
     
-    def editable(self)->None:
-        self.editing = True
+    def editableT(self)->None:
         #validar si existe el current
         if self.current:
+            self.editing = True
             #poner campos editables
             self.fldTitle.setEnabled(True)
             self.date.setEnabled(True)
@@ -228,10 +227,10 @@ class TaskTab(QWidget):
             #advertencia
             warning(self, "Sin seleccion", "Seleccione una tarea primero")
         
-    def save(self)->None:
-        self.editing = False
+    def saveT(self)->None:
         #validar si existe el current
         if self.current:
+            self.editing = False
             #quitar campos editables
             self.fldTitle.setEnabled(False)
             self.date.setEnabled(False)
@@ -254,7 +253,7 @@ class TaskTab(QWidget):
             #advertencia
             warning(self, "Sin seleccion", "Seleccione una tarea primero")
             
-    def complete(self)->None:
+    def completeT(self)->None:
         #mientras se edita
         if self.editing:
             return

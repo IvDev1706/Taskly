@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import (QWidget, QTabWidget)
 from .TaskView import TaskTab
 from .ProjectView import ProjectTab
+from .ActivityView import ActivityTab
+from .Observers import ProjectObserver
 from utils.variables import FNTELEMENT
 from database.dbconnection import DBConector
 
@@ -22,6 +24,12 @@ class MainWindow(QWidget):
         
         #componentes
         self.tabBar = QTabWidget(self)
+        self.taskTab = TaskTab(self.tabBar)
+        self.progress = ProjectObserver()
+        self.projectTab = ProjectTab(self.tabBar, self.progress)
+        self.activityTab = ActivityTab(self.tabBar, self.progress)
+        self.progress.attachObservable(self.projectTab)
+        self.progress.attachObservable(self.activityTab)
         
         #configuraciones
         self.__config()
@@ -45,8 +53,9 @@ class MainWindow(QWidget):
         
     def __build(self)->None:
         #adiciones al tab
-        self.tabBar.addTab(TaskTab(self.tabBar), "Tareas")
-        self.tabBar.addTab(ProjectTab(self.tabBar), "Proyectos")
+        self.tabBar.addTab(self.taskTab, "Tareas")
+        self.tabBar.addTab(self.projectTab, "Proyectos")
+        self.tabBar.addTab(self.activityTab, "Actividades")
     
     def __listenings(self)->None:
         pass

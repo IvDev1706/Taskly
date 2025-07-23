@@ -27,11 +27,26 @@ QPushButton#task-button:hover{
     border-color: #048;
 }
 
-QTextEdit {
+QTextEdit, QLineEdit, QDateEdit, QComboBox {
     background-color: #fff;
+    color: #000;
+}
+
+QTextEdit:disabled, QLineEdit:disabled, QDateEdit:disabled, QComboBox:disabled {
+    background-color: #eee;
     color: #000;
 }
 
 QDialog#form-cont {
     background-color: #59A;
+}
+
+QTableWidget#table {
+    background-color: #fff;
+    color: #000;
+}
+
+QHeaderView {
+    background-color: #048;
+    color: #fff;
 }

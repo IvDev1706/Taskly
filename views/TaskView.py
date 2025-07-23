@@ -147,8 +147,8 @@ class TaskTab(QWidget):
         self.btnDelete.clicked.connect(self.deleteT)
         self.btnEdit.clicked.connect(self.editableT)
         self.btnSave.clicked.connect(self.saveT)
-        self.btnComplete.clicked.connect(self.completeT)
-        
+        self.btnComplete.clicked.connect(self.completeT)  
+    
     #funcion de lista
     def setTask(self)->None:
         #pide el item

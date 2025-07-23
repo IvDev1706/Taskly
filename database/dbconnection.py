@@ -4,27 +4,27 @@ import psycopg2 as pg
 #clase conector
 class DBConector:
     #variable de conexion
-    conn = None
+    __conn = None
     
     def getConnection():
         #validacion de instancia
-        if not DBConector.conn:
+        if not DBConector.__conn:
             #manejo de error
             try:
-                DBConector.conn = pg.connect(
+                DBConector.__conn = pg.connect(
                     dbname=SERVERCONFIG["bd"],
                     user=SERVERCONFIG["user"],
                     password=SERVERCONFIG["password"],
                     host=SERVERCONFIG["host"],
                     port=SERVERCONFIG["port"]
                 )
-                return DBConector.conn
+                return DBConector.__conn
             except pg.Error as e:
                 print(f"Error({e.pgcode}): {e.pgerror}")
-                return DBConector.conn
+                return DBConector.__conn
         else:
-            return DBConector.conn
+            return DBConector.__conn
         
     def closeConnection()->None:
-        if DBConector.conn:
-            DBConector.conn.close()
+        if DBConector.__conn:
+            DBConector.__conn.close()

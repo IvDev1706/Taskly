@@ -41,7 +41,7 @@ class ActivityApi:
             cursor = self.conn.cursor()
             
             #sentencia
-            cursor.execute(f'SELECT * FROM "FullActivity" WHERE project_id = \'{id}\';')
+            cursor.execute(f'SELECT * FROM "FullActivity" WHERE task_id = \'{id}\';')
             data = cursor.fetchall()
             
             #datos de regreso

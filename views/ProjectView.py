@@ -3,12 +3,13 @@ from utils.variables import STATUS, FNTTEXTO, FNTTITLE, FNTELEMENT
 from .Messages import warning, info
 from datetime import date
 from .Dialogs import ProjectForm
+from .Observers import ProjectObserver
 from database.projectAPI import ProjectApi
 from models.ProjectModels import Project
 
 class ProjectTab(QWidget):
     #constructor de clase
-    def __init__(self, parent:QWidget)->None:
+    def __init__(self, parent:QWidget, progress:ProjectObserver)->None:
         #instancia de padre
         super().__init__(parent)
         
@@ -42,6 +43,9 @@ class ProjectTab(QWidget):
         self.current = None
         self.projectForm = ProjectForm(self)
         
+        #progreso de projecto
+        self.progress = progress
+        
         #banderas
         self.editing = False
         
@@ -58,7 +62,7 @@ class ProjectTab(QWidget):
         self.lblDelivery.setText("Project delivery")
         self.lblDelivery.setFont(FNTTITLE)
         self.lblDelivery.setObjectName("task-label")
-        self.lblStatus.setText("Project name")
+        self.lblStatus.setText("Project status")
         self.lblStatus.setFont(FNTTITLE)
         self.lblStatus.setObjectName("task-label")
         
@@ -77,6 +81,7 @@ class ProjectTab(QWidget):
         self.descText.setFont(FNTTEXTO)
         self.descText.setEnabled(False)
         #headers de la tabla
+        self.projectTable.setObjectName("table")
         self.projectTable.setHorizontalHeaderLabels(["Num. activities","Advanced","Finished","% of complete"])
         self.projectTable.setMaximumHeight(80)
         self.projectTable.setItem(0,0,QTableWidgetItem("0"))
@@ -142,6 +147,14 @@ class ProjectTab(QWidget):
         self.btnEdit.clicked.connect(self.editableP)
         self.btnSave.clicked.connect(self.saveP)
         self.btnComplete.clicked.connect(self.completeP)
+    
+    #metodo de observer
+    def update(self)->None:
+        #poner las estadisticas
+        self.projectTable.setItem(0,0,QTableWidgetItem(str(self.progress.noActs)))
+        self.projectTable.setItem(0,1,QTableWidgetItem(str(self.progress.adv)))
+        self.projectTable.setItem(0,2,QTableWidgetItem(str(self.progress.end)))
+        self.projectTable.setItem(0,3,QTableWidgetItem("0%"))
         
     def setProject(self)->None:
         #verificar que haya una señleccion
@@ -155,6 +168,9 @@ class ProjectTab(QWidget):
         self.current = self.api.getProject(item.data(0))
         
         if self.current:
+            #guardar en progreso
+            self.progress.id = self.current.id
+            self.progress.notify()
             #colocar en los campos
             self.fldName.setText(self.current.name.strip())
             self.date.setDate(self.current.delivery)

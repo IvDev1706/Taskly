@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit)
 from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
 from .Observers import ProjectObserver
+from .Dialogs import ActivityForm
+from .Messages import info, warning
 from models.taskModels import Activity
 from database.activityAPI import ActivityApi
 
@@ -37,10 +39,14 @@ class ActivityTab(QWidget):
         #api de base de datos
         self.api = ActivityApi()
         self.current = None
+        self.acts = []
         self.progress = progress
         
         #banderas
         self.editing = False
+        
+        #formulario de creacion
+        self.actForm = ActivityForm(self)
         
         #metodos de ventana
         self.__config()
@@ -135,11 +141,41 @@ class ActivityTab(QWidget):
         self.btnComplete.clicked.connect(self.completeT)  
     
     def update(self)->None:
+        #validar que no haya seleccion o que no sea el mismo proyecto
+        if self.current and self.current.project == self.progress.id:
+            return
+        
         #limpiar items
         self.list.clear()
         
         #poner nuevos items
-        self.list.addItems(self.api.getActivityIds(self.progress.id))
+        self.acts = self.api.getActivities(self.progress.id)
+        
+        #contar el numero de actividades
+        self.progress.noActs = len(self.acts)
+        
+        #si no tiene actividades
+        if self.progress.noActs == 0:
+            return
+        
+        #contar actividades avanzadas y finalizadas
+        for act in self.acts:
+            self.list.addItem(act.id)
+            if act.status == 2:
+                self.progress.adv += 1
+            if act.status == 3:
+                self.progress.end += 1
+    
+    #limpiar la seleccion
+    def clearSelection(self)->None:
+        #limpiar el current
+        self.current = None
+        
+        #limpiar los campos
+        self.fldTitle.setText('')
+        self.cbxPriority.setCurrentIndex(0)
+        self.cbxStatus.setCurrentIndex(0)
+        self.descText.setText('')
     
     #funcion de lista
     def setActivity(self)->None:
@@ -152,7 +188,10 @@ class ActivityTab(QWidget):
         
         #obtener el id
         id = item.data(0)
-        self.current = self.api.getActivity(id)
+        for act in self.acts:
+            if act.id == id:
+                self.current = act
+                break
         
         #validar que se encontro
         if self.current:
@@ -164,10 +203,54 @@ class ActivityTab(QWidget):
     
     #funciones de botones
     def createT(self)->None:
-        pass
-            
+        #verificar que no se este editando
+        if self.editing:
+            return
+        
+        #mostrar formulario
+        if self.actForm.exec():
+            #obtener datos
+            data = self.actForm.data
+            #pasar a modelo
+            newAct = Activity(*data,1,self.progress.id)
+            #mandar al api
+            if self.api.createActivity(newAct):
+                #actualizar en observer
+                self.progress.noActs += 1
+                #añadir en caso de seleccion
+                if self.current:
+                   self.list.addItem(newAct.id)
+                info(self, "Actividad creada", "La actividad ha sido creada")
+                self.progress.notify()
+            del newAct
+         
     def deleteT(self)->None:
-        pass
+        #validar que haya seleccion
+        if not self.current:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una actividad primero")
+            return
+        
+        #validar que no se este editando
+        if self.editing:
+            return
+        
+        #borrar en el api
+        if self.api.deleteActivity(self.current.id):
+            #borrar de la lista
+            self.list.takeItem(self.list.currentRow())
+            self.list.setCurrentRow(-1)
+            #limpiar campos
+            self.fldTitle.setText('')
+            self.cbxPriority.setCurrentIndex(0)
+            self.cbxStatus.setCurrentIndex(0)
+            self.descText.setText('')
+            #actualiar en el observer
+            self.progress.noActs -= 1
+            self.progress.notify()
+            #limpar el current
+            self.current = None
+            info(self, "Actividad eliminado","La actividad se ha eliminado")
     
     def editableT(self)->None:
         pass

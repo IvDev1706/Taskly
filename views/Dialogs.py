@@ -232,3 +232,89 @@ class ProjectForm(BaseForm):
         self.__clean()
         #cierre formal
         super().closeEvent(a0)
+        
+class ActivityForm(BaseForm):
+    #constructor
+    def __init__(self, parent)->None:
+        #instancia de padre
+        super().__init__(parent)
+        
+        #config
+        super().setWindowTitle("New Activity")
+        
+        #componentes
+        self.lblTitle = QLabel(self)
+        self.lblId = QLabel(self)
+        self.fldId = QLineEdit(self)
+        self.lblPriority = QLabel(self)
+        self.cbxPriority = QComboBox(self)
+        self.lblDesc = QLabel(self)
+        self.descText = QTextEdit(self)
+        
+        #configuracion
+        self.__config()
+        
+        #armado del formulario
+        self.__build()
+        
+        self.data = []
+    
+        self.btnGuardar.clicked.connect(self.__save)
+        
+    def __config(self)->None:
+        self.lblTitle.setFont(FNTTITLE)
+        self.lblTitle.setText("Nueva actividad")
+        self.lblTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lblTitle.setObjectName("task-label")
+        self.lblId.setFont(FNTTEXTO)
+        self.lblId.setText("ID (3 chars.):")
+        self.lblId.setObjectName("task-label")
+        self.lblPriority.setFont(FNTTEXTO)
+        self.lblPriority.setText("Nivel de eprioridad:")
+        self.lblPriority.setObjectName("task-label")
+        self.lblDesc.setFont(FNTTEXTO)
+        self.lblDesc.setText("Descripcion:")
+        self.lblDesc.setObjectName("task-label")
+        self.fldId.setPlaceholderText("XXX")
+        self.fldId.setMaxLength(3)
+        self.cbxPriority.addItems(PRIORITIES.keys())
+        self.descText.setPlaceholderText("Alguna descripcion")
+        
+    def __build(self)->None:
+        self.mainV.addWidget(self.lblTitle)
+        self.formL.addRow(self.lblId,self.fldId)
+        self.formL.addRow(self.lblPriority, self.cbxPriority)
+        self.mainV.addLayout(self.formL)
+        self.mainV.addWidget(self.lblDesc)
+        self.mainV.addWidget(self.descText)
+        self.mainV.addWidget(self.btnGuardar)
+        
+    def __save(self)->None:
+        #reseteo de data
+        self.data = []
+        
+        if self.fldId.text()=='':
+            #mensaje
+            warning(self, "Clave vacia", "No se admiten claves vacias")
+        else:
+            #capturar los datos
+            self.data.append("A-"+self.fldId.text())
+            self.data.append(self.descText.toPlainText())
+            self.data.append(PRIORITIES[self.cbxPriority.currentData(0)])
+            
+            #limpiar y cerrar
+            self.__clean()
+            self.accept() # para cerrar la ventana en exec
+        
+    def __clean(self)->None:
+        #limpiar campos
+        self.fldId.setText('')
+        self.cbxPriority.setCurrentIndex(0)
+        self.descText.setText('')
+        
+    #sobreescritura del metodo de cierre
+    def closeEvent(self, a0):
+        #limpieza
+        self.__clean()
+        #cierre formal
+        super().closeEvent(a0)

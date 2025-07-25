@@ -28,8 +28,8 @@ class MainWindow(QWidget):
         self.progress = ProjectObserver()
         self.projectTab = ProjectTab(self.tabBar, self.progress)
         self.activityTab = ActivityTab(self.tabBar, self.progress)
-        self.progress.attachObservable(self.projectTab)
         self.progress.attachObservable(self.activityTab)
+        self.progress.attachObservable(self.projectTab)
         
         #configuraciones
         self.__config()
@@ -58,7 +58,19 @@ class MainWindow(QWidget):
         self.tabBar.addTab(self.activityTab, "Actividades")
     
     def __listenings(self)->None:
-        pass
+        self.tabBar.currentChanged.connect(self.onChange)
+        
+    def onChange(self, index:int)->None:
+        #ver en que tab se cambio
+        if index == 0:
+            #limpiar seleccion en task
+            self.taskTab.clearSelection()
+        elif index == 1:
+            #limpiar seleccion en project
+            self.projectTab.clearSelection()
+        else:
+            #limpiar seleccion en activity
+            self.activityTab.clearSelection()
     
     def closeEvent(self, a0):
         #cierre de conexion a bd

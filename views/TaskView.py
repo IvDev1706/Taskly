@@ -148,6 +148,18 @@ class TaskTab(QWidget):
         self.btnEdit.clicked.connect(self.editableT)
         self.btnSave.clicked.connect(self.saveT)
         self.btnComplete.clicked.connect(self.completeT)  
+        
+    #limpiar la seleccion
+    def clearSelection(self)->None:
+        #limpiar el current
+        self.current = None
+        
+        #limpiar los campos
+        self.fldTitle.setText('')
+        self.date.setDate(date.today())
+        self.cbxPriority.setCurrentIndex(0)
+        self.cbxStatus.setCurrentIndex(0)
+        self.descText.setText('')
     
     #funcion de lista
     def setTask(self)->None:

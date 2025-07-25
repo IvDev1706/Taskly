@@ -33,3 +33,6 @@ class Activity(Task):
         
     def asTuple(self)->tuple:
         return (self.id, self.desc, self.priority, self.status, self.project)
+    
+    def __str__(self)->str:
+        return self.id

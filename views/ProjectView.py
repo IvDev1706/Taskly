@@ -156,6 +156,17 @@ class ProjectTab(QWidget):
         self.projectTable.setItem(0,2,QTableWidgetItem(str(self.progress.end)))
         self.projectTable.setItem(0,3,QTableWidgetItem("0%"))
         
+    #limpiar la seleccion
+    def clearSelection(self)->None:
+        #limpiar el current
+        self.current = None
+        
+        #limpiar los campos
+        self.fldName.setText('')
+        self.date.setDate(date.today())
+        self.cbxStatus.setCurrentIndex(0)
+        self.descText.setText('')
+        
     def setProject(self)->None:
         #verificar que haya una señleccion
         item = self.list.currentItem()
@@ -170,12 +181,12 @@ class ProjectTab(QWidget):
         if self.current:
             #guardar en progreso
             self.progress.id = self.current.id
-            self.progress.notify()
             #colocar en los campos
             self.fldName.setText(self.current.name.strip())
             self.date.setDate(self.current.delivery)
             self.cbxStatus.setCurrentIndex(self.current.status-1)
             self.descText.setText(self.current.desc)
+            self.progress.notify()
             
     def createP(self)->None:
         #validar que no se este editando

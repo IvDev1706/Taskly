@@ -134,11 +134,11 @@ class ActivityTab(QWidget):
         self.list.currentItemChanged.connect(self.setActivity)
         
         #escuchas para botones
-        self.btnCreate.clicked.connect(self.createT)
-        self.btnDelete.clicked.connect(self.deleteT)
-        self.btnEdit.clicked.connect(self.editableT)
-        self.btnSave.clicked.connect(self.saveT)
-        self.btnComplete.clicked.connect(self.completeT)  
+        self.btnCreate.clicked.connect(self.createA)
+        self.btnDelete.clicked.connect(self.deleteA)
+        self.btnEdit.clicked.connect(self.editableA)
+        self.btnSave.clicked.connect(self.saveA)
+        self.btnComplete.clicked.connect(self.completeA)  
     
     def update(self)->None:
         #validar que no haya seleccion o que no sea el mismo proyecto
@@ -153,6 +153,10 @@ class ActivityTab(QWidget):
         
         #contar el numero de actividades
         self.progress.noActs = len(self.acts)
+        
+        #resetear las actividades
+        self.progress.adv = 0
+        self.progress.end = 0
         
         #si no tiene actividades
         if self.progress.noActs == 0:
@@ -170,6 +174,11 @@ class ActivityTab(QWidget):
     def clearSelection(self)->None:
         #limpiar el current
         self.current = None
+        
+        #limpiar seleccion
+        self.list.clearSelection()
+        self.list.clearFocus()
+        self.list.setCurrentRow(-1)
         
         #limpiar los campos
         self.fldTitle.setText('')
@@ -202,7 +211,7 @@ class ActivityTab(QWidget):
             self.cbxStatus.setCurrentIndex(self.current.status-1)
     
     #funciones de botones
-    def createT(self)->None:
+    def createA(self)->None:
         #verificar que no se este editando
         if self.editing:
             return
@@ -224,7 +233,7 @@ class ActivityTab(QWidget):
                 self.progress.notify()
             del newAct
          
-    def deleteT(self)->None:
+    def deleteA(self)->None:
         #validar que haya seleccion
         if not self.current:
             #advertencia
@@ -250,13 +259,86 @@ class ActivityTab(QWidget):
             self.progress.notify()
             #limpar el current
             self.current = None
-            info(self, "Actividad eliminado","La actividad se ha eliminado")
+            info(self, "Actividad eliminada","La actividad se ha eliminado")
     
-    def editableT(self)->None:
-        pass
+    def editableA(self)->None:
+        #verificar seleccion
+        if not self.current:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una actividad primero")
+            return
         
-    def saveT(self)->None:
-        pass
+        #activar la bandera
+        self.editing = True
+        
+        #habilitar campos
+        self.cbxPriority.setEnabled(True)
+        if self.current.status != STATUS["terminada"]:
+            self.cbxStatus.setEnabled(True)
+        self.descText.setEnabled(True)
+        
+    def saveA(self)->None:
+        #verificar seleccion
+        if not self.current:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una actividad primero")
+            return
+        
+        #desactivar la bandera
+        self.editing = False
+        
+        #habilitar campos
+        self.cbxPriority.setEnabled(False)
+        self.cbxStatus.setEnabled(False)
+        self.descText.setEnabled(False)
+        
+        #guardar el estatus previo
+        prev_status = self.current.status
+        
+        #tomar los valores
+        self.current.desc = self.descText.toPlainText()
+        self.current.priority = PRIORITIES[self.cbxPriority.currentText()]
+        self.current.status = STATUS[self.cbxStatus.currentText()]
+        
+        #mandar al api
+        if self.api.updateActivity(self.current):
+            #actualizar en observer
+            if prev_status == STATUS["no iniciada"] and self.current.status == STATUS["avanzada"]:
+                self.progress.adv += 1
+            if prev_status == STATUS["no iniciada"] and self.current.status == STATUS["terminada"]:
+                self.progress.end += 1
+            if prev_status == STATUS["avanzada"] and self.current.status == STATUS["no iniciada"]:
+                self.progress.adv -= 1
+            if prev_status == STATUS["avanzada"] and self.current.status == STATUS["terminada"]:
+                self.progress.adv -= 1
+                self.progress.end += 1
+            self.progress.notify()
+            #mensaje de exito
+            info(self, "Actividad actualizada", "La actividad se ha actualizado")
             
-    def completeT(self)->None:
-        pass
+    def completeA(self)->None:
+        #validar que exista una seleccion
+        if not self.current:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una actividad primero")
+            return
+        
+        #validar que no se este editando
+        if self.editing:
+            return
+        
+        #verificar el estatus
+        if self.current.status == STATUS["terminada"]:
+            warning(self, "Actividad completada", "La actividad ya esta completada")
+            return
+        
+        if self.api.completeActivity(self.current.id):
+            #actualizar el estatus
+            self.current.status = STATUS["terminada"]
+            #cambiar en el cbx
+            self.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
+            #actualizar en observer
+            self.progress.end += 1
+            self.progress.notify()
+            #mensaje de exito
+            info(self, "Actividad completada", "La actividad se marco como terminada")

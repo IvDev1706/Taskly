@@ -154,6 +154,11 @@ class TaskTab(QWidget):
         #limpiar el current
         self.current = None
         
+        #limpiar seleccion
+        self.list.clearSelection()
+        self.list.clearFocus()
+        self.list.setCurrentRow(-1)
+        
         #limpiar los campos
         self.fldTitle.setText('')
         self.date.setDate(date.today())
@@ -233,7 +238,8 @@ class TaskTab(QWidget):
             self.fldTitle.setEnabled(True)
             self.date.setEnabled(True)
             self.cbxPriority.setEnabled(True)
-            self.cbxStatus.setEnabled(True)
+            if self.current.status != STATUS["terminada"]:
+                self.cbxStatus.setEnabled(True)
             self.descText.setEnabled(True)
         else:
             #advertencia

@@ -150,22 +150,34 @@ class ProjectTab(QWidget):
     
     #metodo de observer
     def update(self)->None:
+        #calcular porcentaje de trabajo
+        work = 0 if self.progress.noActs == 0 else (self.progress.end/self.progress.noActs)*100
         #poner las estadisticas
         self.projectTable.setItem(0,0,QTableWidgetItem(str(self.progress.noActs)))
         self.projectTable.setItem(0,1,QTableWidgetItem(str(self.progress.adv)))
         self.projectTable.setItem(0,2,QTableWidgetItem(str(self.progress.end)))
-        self.projectTable.setItem(0,3,QTableWidgetItem("0%"))
+        self.projectTable.setItem(0,3,QTableWidgetItem(f"{work}%"))
         
     #limpiar la seleccion
     def clearSelection(self)->None:
         #limpiar el current
         self.current = None
         
+        #limpiar seleccion
+        self.list.clearSelection()
+        self.list.clearFocus()
+        self.list.setCurrentRow(-1)
+        
         #limpiar los campos
         self.fldName.setText('')
         self.date.setDate(date.today())
         self.cbxStatus.setCurrentIndex(0)
         self.descText.setText('')
+        
+        self.projectTable.setItem(0,0,QTableWidgetItem("0"))
+        self.projectTable.setItem(0,1,QTableWidgetItem("0"))
+        self.projectTable.setItem(0,2,QTableWidgetItem("0"))
+        self.projectTable.setItem(0,3,QTableWidgetItem("0%"))
         
     def setProject(self)->None:
         #verificar que haya una señleccion
@@ -227,6 +239,10 @@ class ProjectTab(QWidget):
             self.date.setDate(date.today())
             self.cbxStatus.setCurrentIndex(0)
             self.descText.setText('')
+            self.projectTable.setItem(0,0,QTableWidgetItem("0"))
+            self.projectTable.setItem(0,1,QTableWidgetItem("0"))
+            self.projectTable.setItem(0,2,QTableWidgetItem("0"))
+            self.projectTable.setItem(0,3,QTableWidgetItem("0%"))
             #resetear el current
             self.current = None
             info(self, "Proyecto eliminado","El proyecto se ha eliminado")
@@ -242,7 +258,8 @@ class ProjectTab(QWidget):
         #activar campos
         self.fldName.setEnabled(True)
         self.date.setEnabled(True)
-        self.cbxStatus.setEnabled(True)
+        if self.current.status != STATUS["terminada"]:
+            self.cbxStatus.setEnabled(True)
         self.descText.setEnabled(True)
         
     def saveP(self)->None:
@@ -286,9 +303,16 @@ class ProjectTab(QWidget):
             warning(self, "Proyecto completado", "El proyecto ya esta completado")
             return
         
-        #actualizar el estatus
-        self.current.status = STATUS["terminada"]
-        #cambiar en el cbx
-        self.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
-        #mensaje de exito
-        info(self, "Proyecto completado", "El proyecto se marco como terminado")
+        #verificar el estatus
+        if self.progress.end != self.progress.noActs:
+            warning(self, "Proyecto incompleto", "No se han completado todas las actividades de este proyecto")
+            return
+        
+        #mandar al api
+        if self.api.completeProject(self.current.id):
+            #actualizar el estatus
+            self.current.status = STATUS["terminada"]
+            #cambiar en el cbx
+            self.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
+            #mensaje de exito
+            info(self, "Proyecto completado", "El proyecto se marco como terminado")

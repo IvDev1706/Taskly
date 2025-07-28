@@ -1,10 +1,11 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit, QTableWidget, QTableWidgetItem)
 from utils.variables import STATUS, FNTTEXTO, FNTTITLE, FNTELEMENT
-from .Messages import warning, info
+from .Messages import warning, info, error
 from datetime import date
 from .Dialogs import ProjectForm
 from .Observers import ProjectObserver
 from database.projectAPI import ProjectApi
+from utils.config import BASEDIR
 from models.ProjectModels import Project
 
 class ProjectTab(QWidget):
@@ -15,7 +16,7 @@ class ProjectTab(QWidget):
         
         #hoja de estilos
         try:
-            with open("C:\\Users\\Ivan Cadena\\ProyectosPython\\Topicos\\Taskly\\assets\\styles\\task.css","r") as styles:
+            with open(BASEDIR+"\\assets\\styles\\task.css","r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
@@ -67,7 +68,8 @@ class ProjectTab(QWidget):
         self.lblStatus.setObjectName("task-label")
         
         #configuracion de campos
-        self.list.addItems(self.api.getProjectIds())
+        if self.api.conn:
+            self.list.addItems(self.api.getProjectIds())
         self.list.setFont(FNTELEMENT)
         self.list.setMaximumWidth(110)
         self.fldName.setFont(FNTELEMENT)
@@ -138,6 +140,9 @@ class ProjectTab(QWidget):
         self.setLayout(mainV)
     
     def __listenings(self)->None:
+        if not self.api.conn:
+            return
+        
         #esucuha de lista
         self.list.currentItemChanged.connect(self.setProject)
         
@@ -216,6 +221,9 @@ class ProjectTab(QWidget):
                 self.list.addItem(newProject.id)
                 #mensaje de exito
                 info(self,"Projecto creado","El projecto ha sido creado con exito")
+            else:
+                #mensaje de error
+                error(self,"Proyecto no creado","No se ha creado el proyecto")
             del newProject
         
     def deleteP(self)->None:
@@ -246,6 +254,9 @@ class ProjectTab(QWidget):
             #resetear el current
             self.current = None
             info(self, "Proyecto eliminado","El proyecto se ha eliminado")
+        else:
+            #mensaje de error
+            error(self,"Proyecto no eliminado","No se ha eliminado el proyecto")
     
     def editableP(self)->None:
         #validar que haya una seleccion
@@ -286,6 +297,9 @@ class ProjectTab(QWidget):
         if self.api.updateProject(self.current):
                 #mensaje de exito
                 info(self, "Proyecto actualizado", "El proyecto se ha actualizado")
+        else:
+            #mensaje de error
+            error(self,"Proyecto no actualizado","No se ha actualizado el proyecto")
     
     def completeP(self)->None:
         #validar que exista una seleccion
@@ -316,3 +330,6 @@ class ProjectTab(QWidget):
             self.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
             #mensaje de exito
             info(self, "Proyecto completado", "El proyecto se marco como terminado")
+        else:
+            #mensaje de error
+            error(self,"Proyecto no completado","No se ha completado el proyecto")

@@ -22,7 +22,7 @@ QPushButton#task-button {
     border: 2px solid #037;
 }
 
-QPushButton#task-button:hover{
+QPushButton#task-button:hover {
     background-color: #059;
     border-color: #048;
 }
@@ -37,8 +37,9 @@ QTextEdit:disabled, QLineEdit:disabled, QDateEdit:disabled, QComboBox:disabled {
     color: #000;
 }
 
-QDialog#form-cont {
+QDialog#form-cont, QMessageBox {
     background-color: #59A;
+    color: #000;
 }
 
 QTableWidget#table {

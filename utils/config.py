@@ -1,11 +1,14 @@
-import json
+import json, os
+
+#directorio base de forma dinamica
+BASEDIR = os.path.dirname(os.path.abspath(__name__))
 
 #leer los datos de configuracion
-with open("C:\\Users\\Ivan Cadena\\ProyectosPython\\Topicos\\Taskly\\assets\\config\\cfg.json","r") as config:
+with open(BASEDIR+"\\assets\\config\\cfg.json","r") as config:
     content = config.read()
     cfgdata = json.loads(content)
     config.close()
-
+    
 #configuracion de bd
 SERVERCONFIG = cfgdata['database']
 

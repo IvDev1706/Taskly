@@ -1,9 +1,12 @@
 from PyQt6.QtWidgets import (QWidget, QTabWidget)
+from PyQt6.QtGui import QIcon
 from .TaskView import TaskTab
 from .ProjectView import ProjectTab
 from .ActivityView import ActivityTab
 from .Observers import ProjectObserver
+from .Messages import error
 from utils.variables import FNTELEMENT
+from utils.config import BASEDIR
 from database.dbconnection import DBConector
 
 #clase de ventana principal
@@ -15,7 +18,7 @@ class MainWindow(QWidget):
         
         #hoja de estilos
         try:
-            with open("C:\\Users\\Ivan Cadena\\ProyectosPython\\Topicos\\Taskly\\assets\\styles\\main.css","r") as styles:
+            with open(BASEDIR+"\\assets\\styles\\main.css","r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
@@ -40,10 +43,15 @@ class MainWindow(QWidget):
         #escuchas
         self.__listenings()
         
+        #si no hay conexion a la bd
+        if not DBConector.getConnection():
+            error(self,"Sin conexion a bd","No hay conexion a la base de datos")
+        
     #metodos de ventana
     def __config(self)->None:
         #configuracion de ventana
-        self.setWindowTitle("Taskly - 0.0.1")
+        self.setWindowTitle("Taskly - casi 1.0.0")
+        self.setWindowIcon(QIcon(BASEDIR+"\\assets\\img\\taskly-ico.png"))
         self.setFixedSize(600, 400)
         self.setObjectName("main-window")
         

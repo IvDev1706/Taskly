@@ -2,8 +2,9 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QLi
 from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
 from .Observers import ProjectObserver
 from .Dialogs import ActivityForm
-from .Messages import info, warning
+from .Messages import info, warning, error
 from models.taskModels import Activity
+from utils.config import BASEDIR
 from database.activityAPI import ActivityApi
 
 class ActivityTab(QWidget):
@@ -14,7 +15,7 @@ class ActivityTab(QWidget):
         
         #hoja de estilos
         try:
-            with open("C:\\Users\\Ivan Cadena\\ProyectosPython\\Topicos\\Taskly\\assets\\styles\\task.css","r") as styles:
+            with open(BASEDIR+"\\assets\\styles\\task.css","r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
@@ -130,6 +131,8 @@ class ActivityTab(QWidget):
         self.setLayout(mainV)
     
     def __listenings(self)->None:
+        if not self.api.conn:
+            return
         #escucha de lista
         self.list.currentItemChanged.connect(self.setActivity)
         
@@ -231,6 +234,9 @@ class ActivityTab(QWidget):
                    self.list.addItem(newAct.id)
                 info(self, "Actividad creada", "La actividad ha sido creada")
                 self.progress.notify()
+            else:
+                #mensaje de error
+                error(self,"Actividad no creada","No se ha creado la actividad")
             del newAct
          
     def deleteA(self)->None:
@@ -260,6 +266,9 @@ class ActivityTab(QWidget):
             #limpar el current
             self.current = None
             info(self, "Actividad eliminada","La actividad se ha eliminado")
+        else:
+            #mensaje de error
+            error(self,"Actividad no eliminada","No se ha eliminado la actividad")
     
     def editableA(self)->None:
         #verificar seleccion
@@ -315,6 +324,9 @@ class ActivityTab(QWidget):
             self.progress.notify()
             #mensaje de exito
             info(self, "Actividad actualizada", "La actividad se ha actualizado")
+        else:
+            #mensaje de error
+            error(self,"Actividad no creada","No se ha actualizado la actividad")
             
     def completeA(self)->None:
         #validar que exista una seleccion
@@ -342,3 +354,6 @@ class ActivityTab(QWidget):
             self.progress.notify()
             #mensaje de exito
             info(self, "Actividad completada", "La actividad se marco como terminada")
+        else:
+            #mensaje de error
+            error(self,"Actividad no completada","No se ha completado la actividad")

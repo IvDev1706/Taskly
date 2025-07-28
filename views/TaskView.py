@@ -1,9 +1,10 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit)
 from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
-from .Messages import warning, info
+from .Messages import warning, info, error
 from datetime import date
 from .Dialogs import TaskForm
 from models.taskModels import SimpleTask
+from utils.config import BASEDIR
 from database.taskAPI import TaskApi
 
 class TaskTab(QWidget):
@@ -14,7 +15,7 @@ class TaskTab(QWidget):
         
         #hoja de estilos
         try:
-            with open("C:\\Users\\Ivan Cadena\\ProyectosPython\\Topicos\\Taskly\\assets\\styles\\task.css","r") as styles:
+            with open(BASEDIR+"\\assets\\styles\\task.css","r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
@@ -58,7 +59,8 @@ class TaskTab(QWidget):
         #configuracion de componentes
         self.list.setFont(FNTELEMENT)
         self.list.setMaximumWidth(110)
-        self.list.addItems(self.api.getTaskIds())
+        if self.api.conn:
+            self.list.addItems(self.api.getTaskIds())
         
         #etiquetas
         self.lblTitle.setText("Task title")
@@ -139,6 +141,9 @@ class TaskTab(QWidget):
         self.setLayout(mainV)
     
     def __listenings(self)->None:
+        if not self.api.conn:
+            return
+        
         #escucha de lista
         self.list.currentItemChanged.connect(self.setTask)
         
@@ -204,91 +209,114 @@ class TaskTab(QWidget):
                 #mensaje de exito
                 info(self, "Tarea creada", "La tarea ha sido creada")
             del newTask
+        else:
+            #mensaje de error
+            error(self,"Tarea no creada","No se ha creado la tarea")
             
     def deleteT(self)->None:
+        #validar si existe el current
+        if not self.current:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una tarea primero")
+            return
+        
         #mientras se edita
         if self.editing:
             return
         
-        #validar si existe el current
-        if self.current:
-            #eliminar en el api
-            if self.api.deleteTask(self.current.id):
-                #eliminar de la lista
-                self.list.takeItem(self.list.currentRow())
-                self.list.setCurrentRow(-1)
-                #limpiar los campos
-                self.lblTitle.setText('Task title')
-                self.date.setDate(date.today())
-                self.cbxPriority.setCurrentIndex(0)
-                self.cbxStatus.setCurrentIndex(0)
-                self.descText.setText('')
-                #quitar referencia
-                self.current = None
-                info(self, "Tarea eliminada","La tarea se ha eliminado")
+        #eliminar en el api
+        if self.api.deleteTask(self.current.id):
+            #eliminar de la lista
+            self.list.takeItem(self.list.currentRow())
+            self.list.setCurrentRow(-1)
+            #limpiar los campos
+            self.lblTitle.setText('Task title')
+            self.date.setDate(date.today())
+            self.cbxPriority.setCurrentIndex(0)
+            self.cbxStatus.setCurrentIndex(0)
+            self.descText.setText('')
+            #quitar referencia
+            self.current = None
+            info(self, "Tarea eliminada","La tarea se ha eliminado")
         else:
-            #advertencia
-            warning(self, "Sin seleccion", "Seleccione una tarea primero")
+            #mensaje de error
+            error(self,"Tarea no eliminada","No se ha creado la tarea")
+            
     
     def editableT(self)->None:
         #validar si existe el current
-        if self.current:
-            self.editing = True
-            #poner campos editables
-            self.fldTitle.setEnabled(True)
-            self.date.setEnabled(True)
-            self.cbxPriority.setEnabled(True)
-            if self.current.status != STATUS["terminada"]:
-                self.cbxStatus.setEnabled(True)
-            self.descText.setEnabled(True)
-        else:
+        if not self.current:
             #advertencia
             warning(self, "Sin seleccion", "Seleccione una tarea primero")
+            return
+        
+        #encender bandera
+        self.editing = True
+        
+        #poner campos editables
+        self.fldTitle.setEnabled(True)
+        self.date.setEnabled(True)
+        self.cbxPriority.setEnabled(True)
+        if self.current.status != STATUS["terminada"]:
+            self.cbxStatus.setEnabled(True)
+        self.descText.setEnabled(True)
         
     def saveT(self)->None:
         #validar si existe el current
-        if self.current:
-            self.editing = False
-            #quitar campos editables
-            self.fldTitle.setEnabled(False)
-            self.date.setEnabled(False)
-            self.cbxPriority.setEnabled(False)
-            self.cbxStatus.setEnabled(False)
-            self.descText.setEnabled(False)
-            
-            #tomar los valores
-            self.current.title = self.fldTitle.text()
-            self.current.desc = self.descText.toPlainText()
-            self.current.delivery = date(self.date.date().year(), self.date.date().month(), self.date.date().day())
-            self.current.priority = PRIORITIES[self.cbxPriority.currentText()]
-            self.current.status = STATUS[self.cbxStatus.currentText()]
-            
-            #mandar al api
-            if self.api.updateTask(self.current):
-                #mensaje de exito
-                info(self, "Tarea actualizada", "La tarea se ha actualizado")
-        else:
+        if not self.current:
             #advertencia
             warning(self, "Sin seleccion", "Seleccione una tarea primero")
+            return
+        
+        #encender bandera
+        self.editing = False
+        
+        #quitar campos editables
+        self.fldTitle.setEnabled(False)
+        self.date.setEnabled(False)
+        self.cbxPriority.setEnabled(False)
+        self.cbxStatus.setEnabled(False)
+        self.descText.setEnabled(False)
+        
+        #tomar los valores
+        self.current.title = self.fldTitle.text()
+        self.current.desc = self.descText.toPlainText()
+        self.current.delivery = date(self.date.date().year(), self.date.date().month(), self.date.date().day())
+        self.current.priority = PRIORITIES[self.cbxPriority.currentText()]
+        self.current.status = STATUS[self.cbxStatus.currentText()]
+        
+        #mandar al api
+        if self.api.updateTask(self.current):
+            #mensaje de exito
+            info(self, "Tarea actualizada", "La tarea se ha actualizado")
+        else:
+            #mensaje de error
+            error(self,"Tarea no actualizada","No se ha actualizado la tarea")
             
     def completeT(self)->None:
+        #validar seleccion
+        if not self.current:
+            #advertencia
+            warning(self, "Sin seleccion", "Seleccione una tarea primero")
+            return
+        
         #mientras se edita
         if self.editing:
             return
         
-        #validar el current
-        if self.current:
-            #verificar el status
-            if self.current.status != STATUS["terminada"]:
-                self.current.status = STATUS["terminada"]
-                #completar la tarea
-                self.api.completeTask(self.current.id)
-                #cambiar en el cbx
-                self.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
-                #mensaje de exito
-                info(self, "Tarea completada", "La tarea se marco como terminada")
-            else:
-                warning(self, "Tarea completada", "La tarea ya esta completada")
+        #verificar el status
+        if self.current.status == STATUS["terminada"]:
+            warning(self, "Tarea completada", "La tarea ya esta completada")
+            return
+        
+        #marcar como terminado
+        self.current.status = STATUS["terminada"]
+        #completar la tarea
+        if self.api.completeTask(self.current.id):
+            #cambiar en el cbx
+            self.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
+            #mensaje de exito
+            info(self, "Tarea completada", "La tarea se marco como terminada")
         else:
-            #advertencia
-            warning(self, "Sin seleccion", "Seleccione una tarea primero")
+            #mensaje de error
+            error(self,"Tarea no completada","No se ha completado la tarea")

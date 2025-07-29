@@ -19,8 +19,7 @@ class ActivityTab(QWidget):
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
-            print(e.strerror)
-            print("No hay estilos!!!!")
+            pass
         
         #componentes
         self.list = QListWidget(self)

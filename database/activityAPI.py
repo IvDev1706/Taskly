@@ -31,7 +31,7 @@ class ActivityApi:
             #retorno de datos
             return projects
         except Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return []
     
     def createActivity(self, activity:Activity)->bool:
@@ -52,7 +52,7 @@ class ActivityApi:
            #retorno de exito
            return True            
         except Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def updateActivity(self, activity:Activity)->bool:
@@ -73,7 +73,7 @@ class ActivityApi:
            #retorno de exito
            return True            
         except Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def deleteActivity(self, id:str)->bool:
@@ -92,7 +92,7 @@ class ActivityApi:
             #retorno de exito
             return True
         except Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def completeActivity(self, id:str)->bool:
@@ -111,5 +111,5 @@ class ActivityApi:
             #retorno de exito
             return True
         except Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False

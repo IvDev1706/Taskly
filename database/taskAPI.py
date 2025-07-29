@@ -31,7 +31,7 @@ class TaskApi:
             #retorno de lista
             return tasks
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return []
         
     def getTask(self, id:str)->SimpleTask:
@@ -54,7 +54,7 @@ class TaskApi:
             #retorno de lista
             return task
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return None
         except IndexError as e:
             print(f"Error: {e}")
@@ -77,7 +77,7 @@ class TaskApi:
             #retorno de exito
             return True
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def updateTask(self, task:SimpleTask)->bool:
@@ -97,7 +97,7 @@ class TaskApi:
             #retorno de exito
             return True
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def deleteTask(self, id:str)->bool:
@@ -116,7 +116,7 @@ class TaskApi:
             #retorno de exito
             return True
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def completeTask(self, id:str)->bool:
@@ -135,5 +135,5 @@ class TaskApi:
             #retorno de exito
             return True
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False

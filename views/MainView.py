@@ -6,7 +6,7 @@ from .ActivityView import ActivityTab
 from .Observers import ProjectObserver
 from .Messages import error
 from utils.variables import FNTELEMENT
-from utils.config import BASEDIR
+from utils.config import BASEDIR, VERSION
 from database.dbconnection import DBConector
 
 #clase de ventana principal
@@ -22,8 +22,7 @@ class MainWindow(QWidget):
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
-            print(e.strerror)
-            print("No hay estilos!!!!")
+            pass
         
         #componentes
         self.tabBar = QTabWidget(self)
@@ -50,7 +49,7 @@ class MainWindow(QWidget):
     #metodos de ventana
     def __config(self)->None:
         #configuracion de ventana
-        self.setWindowTitle("Taskly - casi 1.0.0")
+        self.setWindowTitle("Taskly - "+VERSION)
         self.setWindowIcon(QIcon(BASEDIR+"\\assets\\img\\taskly-ico.png"))
         self.setFixedSize(600, 400)
         self.setObjectName("main-window")

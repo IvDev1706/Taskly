@@ -31,7 +31,7 @@ class ProjectApi:
             #retorno de datos
             return projects
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return []
         
     def getProject(self, id:str)->Project:
@@ -55,7 +55,7 @@ class ProjectApi:
             #retorno de datos
             return project
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return None
         except IndexError as e:
             return None
@@ -78,7 +78,7 @@ class ProjectApi:
            #retorno de exito
            return True            
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def updateProject(self, project:Project)->bool:
@@ -99,7 +99,7 @@ class ProjectApi:
            #retorno de exito
            return True            
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def deleteProject(self, id:str)->bool:
@@ -118,7 +118,7 @@ class ProjectApi:
             #retorno de exito
             return True
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False
         
     def completeProject(self, id:str)->bool:
@@ -137,5 +137,5 @@ class ProjectApi:
             #retorno de exito
             return True
         except pg.Error as e:
-            print(f"Error({e.pgcode}): {e.pgerror}")
+            #print(f"Error({e.pgcode}): {e.pgerror}")
             return False

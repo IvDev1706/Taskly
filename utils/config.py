@@ -12,6 +12,9 @@ with open(BASEDIR+"\\assets\\config\\cfg.json","r") as config:
 #configuracion de bd
 SERVERCONFIG = cfgdata['database']
 
+#version de la aplicacion
+VERSION = cfgdata['version']
+
 #configuracion de fuentes
 fnts = cfgdata['fonts']
 FNTTEXTOCFG = fnts['text']

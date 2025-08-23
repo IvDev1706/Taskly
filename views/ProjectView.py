@@ -4,9 +4,10 @@ from .Messages import warning, info, error
 from datetime import date
 from .Dialogs import ProjectForm
 from .Observers import ProjectObserver
-from database.projectAPI import ProjectApi
+from database.projects import ProjectApi
 from utils.config import BASEDIR
 from models.ProjectModels import Project
+import os
 
 class ProjectTab(QWidget):
     #constructor de clase
@@ -16,7 +17,7 @@ class ProjectTab(QWidget):
         
         #hoja de estilos
         try:
-            with open(BASEDIR+"\\assets\\styles\\task.css","r") as styles:
+            with open(os.path.join(BASEDIR,"assets","styles","task.css"),"r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:

@@ -7,7 +7,8 @@ from .Observers import ProjectObserver
 from .Messages import error
 from utils.variables import FNTELEMENT
 from utils.config import BASEDIR, VERSION
-from database.dbconnection import DBConector
+from database.dbconnection import closeSession
+import os
 
 #clase de ventana principal
 class MainWindow(QWidget):
@@ -18,7 +19,7 @@ class MainWindow(QWidget):
         
         #hoja de estilos
         try:
-            with open(BASEDIR+"\\assets\\styles\\main.css","r") as styles:
+            with open(os.path.join(BASEDIR,"assets","styles","main.css"),"r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
@@ -27,11 +28,11 @@ class MainWindow(QWidget):
         #componentes
         self.tabBar = QTabWidget(self)
         self.taskTab = TaskTab(self.tabBar)
-        self.progress = ProjectObserver()
-        self.projectTab = ProjectTab(self.tabBar, self.progress)
-        self.activityTab = ActivityTab(self.tabBar, self.progress)
-        self.progress.attachObservable(self.activityTab)
-        self.progress.attachObservable(self.projectTab)
+        #self.progress = ProjectObserver()
+        #self.projectTab = ProjectTab(self.tabBar, self.progress)
+        #self.activityTab = ActivityTab(self.tabBar, self.progress)
+        #self.progress.attachObservable(self.activityTab)
+        #self.progress.attachObservable(self.projectTab)
         
         #configuraciones
         self.__config()
@@ -42,15 +43,11 @@ class MainWindow(QWidget):
         #escuchas
         self.__listenings()
         
-        #si no hay conexion a la bd
-        if not DBConector.getConnection():
-            error(self,"Sin conexion a bd","No hay conexion a la base de datos")
-        
     #metodos de ventana
     def __config(self)->None:
         #configuracion de ventana
         self.setWindowTitle("Taskly - "+VERSION)
-        self.setWindowIcon(QIcon(BASEDIR+"\\assets\\img\\taskly-ico.png"))
+        self.setWindowIcon(QIcon(os.path.join(BASEDIR,"assets","img","taskly-ico.png")))
         self.setFixedSize(600, 400)
         self.setObjectName("main-window")
         
@@ -61,8 +58,8 @@ class MainWindow(QWidget):
     def __build(self)->None:
         #adiciones al tab
         self.tabBar.addTab(self.taskTab, "Tareas")
-        self.tabBar.addTab(self.projectTab, "Proyectos")
-        self.tabBar.addTab(self.activityTab, "Actividades")
+        #self.tabBar.addTab(self.projectTab, "Proyectos")
+        #self.tabBar.addTab(self.activityTab, "Actividades")
     
     def __listenings(self)->None:
         self.tabBar.currentChanged.connect(self.onChange)
@@ -72,16 +69,16 @@ class MainWindow(QWidget):
         if index == 0:
             #limpiar seleccion en task
             self.taskTab.clearSelection()
-        elif index == 1:
+        #elif index == 1:
             #limpiar seleccion en project
-            self.projectTab.clearSelection()
-        else:
+        #    self.projectTab.clearSelection()
+        #else:
             #limpiar seleccion en activity
-            self.activityTab.clearSelection()
+        #    self.activityTab.clearSelection()
     
     def closeEvent(self, a0):
-        #cierre de conexion a bd
-        DBConector.closeConnection()
+        #cierre de sesion
+        closeSession()
         #cierre formal
         super().closeEvent(a0)
         

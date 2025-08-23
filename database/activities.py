@@ -1,0 +1,2 @@
+class ActivityApi:
+    pass

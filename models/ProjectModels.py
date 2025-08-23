@@ -11,5 +11,5 @@ class Project:
         self.status = status
         
     #paso a tupla
-    def asTuple(self)->tuple:
-        return (self.id, self.name, self.desc, self.delivery, self.status)
+    def asDict(self)->tuple:
+        return {"id":self.id, "name":self.name, "desc":self.desc, "delivery":self.delivery, "status":self.status}

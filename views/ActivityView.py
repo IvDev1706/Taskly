@@ -5,7 +5,8 @@ from .Dialogs import ActivityForm
 from .Messages import info, warning, error
 from models.taskModels import Activity
 from utils.config import BASEDIR
-from database.activityAPI import ActivityApi
+from database.activities import ActivityApi
+import os
 
 class ActivityTab(QWidget):
     #constructor de clase
@@ -15,7 +16,7 @@ class ActivityTab(QWidget):
         
         #hoja de estilos
         try:
-            with open(BASEDIR+"\\assets\\styles\\task.css","r") as styles:
+            with open(os.path.join(BASEDIR,"assets","styles","task.css"),"r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:

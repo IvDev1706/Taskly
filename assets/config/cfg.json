@@ -1,11 +1,7 @@
 {
     "version":"1.0.0",
     "database": {
-        "bd":"taskly_bd",
-        "host":"localhost",
-        "user":"adminTaskly",
-        "password":"admin1001!",
-        "port":"5432"
+        "dialect":"sqlite:///taskly.db"
     },
     "fonts": {
         "text": ["Arial",12],

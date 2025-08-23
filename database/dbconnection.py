@@ -1,30 +1,39 @@
 from utils.config import SERVERCONFIG
-import psycopg2 as pg
+from utils.variables import STATUS, PRIORITIES
+from sqlalchemy import create_engine, insert
+from sqlalchemy.orm import sessionmaker
+from .schemas import metadata, status, prioprities
 
-#clase conector
-class DBConector:
-    #variable de conexion
-    __conn = None
-    
-    def getConnection():
-        #validacion de instancia
-        if not DBConector.__conn:
-            #manejo de error
-            try:
-                DBConector.__conn = pg.connect(
-                    dbname=SERVERCONFIG["bd"],
-                    user=SERVERCONFIG["user"],
-                    password=SERVERCONFIG["password"],
-                    host=SERVERCONFIG["host"],
-                    port=SERVERCONFIG["port"]
-                )
-                return DBConector.__conn
-            except pg.Error as e:
-                print(f"Error({e.pgcode}): {e.pgerror}")
-                return DBConector.__conn
-        else:
-            return DBConector.__conn
-        
-    def closeConnection()->None:
-        if DBConector.__conn:
-            DBConector.__conn.close()
+#motor de base de datos
+engine = create_engine(SERVERCONFIG["dialect"])
+
+#crear la seson
+SesionLocal = sessionmaker(autoflush=False, bind=engine)
+
+#sesion unica
+singlesession = None
+
+def start_db():
+    #motor global de bd
+    global engine
+    #crear las tablas
+    metadata.create_all(engine)
+    #prinsertar las prioridades y estatus
+    db = getSession()
+    stmt = insert(status).prefix_with("OR IGNORE").values([{"name":sts} for sts in STATUS.keys()])
+    db.execute(stmt)
+    stmt = insert(status).prefix_with("OR IGNORE").values([{"name":pri} for pri in PRIORITIES.keys()])
+    db.execute(stmt)
+    db.commit()
+
+def getSession():
+    global singlesession
+    if not singlesession:
+        singlesession = SesionLocal()
+        return singlesession
+    else:
+        return singlesession
+
+def closeSession():
+    if singlesession:
+        singlesession.close()

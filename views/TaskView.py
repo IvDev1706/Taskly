@@ -5,7 +5,8 @@ from datetime import date
 from .Dialogs import TaskForm
 from models.taskModels import SimpleTask
 from utils.config import BASEDIR
-from database.taskAPI import TaskApi
+from database.tasks import TaskApi
+import os
 
 class TaskTab(QWidget):
     #constructor de clase
@@ -15,7 +16,7 @@ class TaskTab(QWidget):
         
         #hoja de estilos
         try:
-            with open(BASEDIR+"\\assets\\styles\\task.css","r") as styles:
+            with open(os.path.join(BASEDIR,"assets","styles","task.css"),"r") as styles:
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
@@ -58,8 +59,7 @@ class TaskTab(QWidget):
         #configuracion de componentes
         self.list.setFont(FNTELEMENT)
         self.list.setMaximumWidth(110)
-        if self.api.conn:
-            self.list.addItems(self.api.getTaskIds())
+        self.list.addItems(self.api.getTaskIds())
         
         #etiquetas
         self.lblTitle.setText("Task title")
@@ -140,9 +140,6 @@ class TaskTab(QWidget):
         self.setLayout(mainV)
     
     def __listenings(self)->None:
-        if not self.api.conn:
-            return
-        
         #escucha de lista
         self.list.currentItemChanged.connect(self.setTask)
         

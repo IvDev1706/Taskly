@@ -1,5 +1,5 @@
 from .dbconnection import getSession
-from sqlalchemy import select, insert, update, delete, Table
+from sqlalchemy import select, insert, update, delete, Table, Selectable, Column
 from sqlalchemy.exc import SQLAlchemyError
 
 #metodos de transaccion
@@ -13,7 +13,7 @@ def getKeys(table:Table)->list:
         result = db.execute(stmt)
         data = result.fetchall()
         #retorno
-        return [dict(id._mapping) for id in data]
+        return [dict(id._mapping)["id"] for id in data]
     except SQLAlchemyError as e:
         return []
     
@@ -30,6 +30,19 @@ def getInfo(table:Table, id: str | int)->dict | None:
         return dict(info._mapping) if info else None
     except SQLAlchemyError as e:
         return None
+    
+def getJoin(table:Selectable, col:Column, value:str)->list:
+    try:
+        #obtener la sesion
+        db = getSession()
+        #preparar el statement
+        stmt = select(table).where(col == value)
+        #obtencion de los datos
+        result = db.execute(stmt)
+        data = result.fetchall()
+        return [dict(row._mapping) for row in data]
+    except SQLAlchemyError:
+        return []
 
 def create(table:Table, data:dict)->bool:
     try:

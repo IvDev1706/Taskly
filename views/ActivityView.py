@@ -131,8 +131,6 @@ class ActivityTab(QWidget):
         self.setLayout(mainV)
     
     def __listenings(self)->None:
-        if not self.api.conn:
-            return
         #escucha de lista
         self.list.currentItemChanged.connect(self.setActivity)
         

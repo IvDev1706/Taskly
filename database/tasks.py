@@ -1,6 +1,6 @@
 from .schemas import task, simpletask
 from .transactions import getKeys, getInfo, create, modify, drop
-from models.taskModels import Task, SimpleTask
+from models.taskModels import SimpleTask
 
 class TaskApi:
     #metodos de operacion

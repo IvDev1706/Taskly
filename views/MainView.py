@@ -28,11 +28,11 @@ class MainWindow(QWidget):
         #componentes
         self.tabBar = QTabWidget(self)
         self.taskTab = TaskTab(self.tabBar)
-        #self.progress = ProjectObserver()
-        #self.projectTab = ProjectTab(self.tabBar, self.progress)
-        #self.activityTab = ActivityTab(self.tabBar, self.progress)
-        #self.progress.attachObservable(self.activityTab)
-        #self.progress.attachObservable(self.projectTab)
+        self.progress = ProjectObserver()
+        self.projectTab = ProjectTab(self.tabBar, self.progress)
+        self.activityTab = ActivityTab(self.tabBar, self.progress)
+        self.progress.attachObservable(self.activityTab)
+        self.progress.attachObservable(self.projectTab)
         
         #configuraciones
         self.__config()
@@ -58,8 +58,8 @@ class MainWindow(QWidget):
     def __build(self)->None:
         #adiciones al tab
         self.tabBar.addTab(self.taskTab, "Tareas")
-        #self.tabBar.addTab(self.projectTab, "Proyectos")
-        #self.tabBar.addTab(self.activityTab, "Actividades")
+        self.tabBar.addTab(self.projectTab, "Proyectos")
+        self.tabBar.addTab(self.activityTab, "Actividades")
     
     def __listenings(self)->None:
         self.tabBar.currentChanged.connect(self.onChange)
@@ -69,12 +69,12 @@ class MainWindow(QWidget):
         if index == 0:
             #limpiar seleccion en task
             self.taskTab.clearSelection()
-        #elif index == 1:
+        elif index == 1:
             #limpiar seleccion en project
-        #    self.projectTab.clearSelection()
-        #else:
+            self.projectTab.clearSelection()
+        else:
             #limpiar seleccion en activity
-        #    self.activityTab.clearSelection()
+            self.activityTab.clearSelection()
     
     def closeEvent(self, a0):
         #cierre de sesion

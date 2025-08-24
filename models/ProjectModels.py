@@ -10,6 +10,6 @@ class Project:
         self.delivery = delivery
         self.status = status
         
-    #paso a tupla
-    def asDict(self)->tuple:
+    #paso a diccioinario
+    def asDict(self)->dict:
         return {"id":self.id, "name":self.name, "desc":self.desc, "delivery":self.delivery, "status":self.status}

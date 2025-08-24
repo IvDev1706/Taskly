@@ -68,8 +68,7 @@ class ProjectTab(QWidget):
         self.lblStatus.setObjectName("task-label")
         
         #configuracion de campos
-        if self.api.conn:
-            self.list.addItems(self.api.getProjectIds())
+        self.list.addItems(self.api.getProjectIds())
         self.list.setFont(FNTELEMENT)
         self.list.setMaximumWidth(110)
         self.fldName.setFont(FNTELEMENT)
@@ -140,9 +139,6 @@ class ProjectTab(QWidget):
         self.setLayout(mainV)
     
     def __listenings(self)->None:
-        if not self.api.conn:
-            return
-        
         #esucuha de lista
         self.list.currentItemChanged.connect(self.setProject)
         

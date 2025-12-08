@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QComboBox, QDateEdit, QPushButton, QLabel, QTextEdit)
 from PyQt6.QtCore import Qt
-from utils.variables import FNTTEXTO, FNTTITLE, PRIORITIES
+from utils.constants import FNTTEXTO, FNTTITLE, PRIORITIES
 from .Messages import warning
 from datetime import date
 
@@ -77,7 +77,7 @@ class TaskForm(BaseForm):
         self.lblDelivery.setText("Fecha de entrega:")
         self.lblDelivery.setObjectName("task-label")
         self.lblPriority.setFont(FNTTEXTO)
-        self.lblPriority.setText("Nivel de eprioridad:")
+        self.lblPriority.setText("Nivel de prioridad:")
         self.lblPriority.setObjectName("task-label")
         self.lblDesc.setFont(FNTTEXTO)
         self.lblDesc.setText("Descripcion:")
@@ -270,7 +270,7 @@ class ActivityForm(BaseForm):
         self.lblId.setText("ID (3 chars.):")
         self.lblId.setObjectName("task-label")
         self.lblPriority.setFont(FNTTEXTO)
-        self.lblPriority.setText("Nivel de eprioridad:")
+        self.lblPriority.setText("Nivel de prioridad:")
         self.lblPriority.setObjectName("task-label")
         self.lblDesc.setFont(FNTTEXTO)
         self.lblDesc.setText("Descripcion:")

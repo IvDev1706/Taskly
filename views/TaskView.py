@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit)
-from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
+from utils.constants import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
 from .Messages import warning, info, error
 from datetime import date
 from .Dialogs import TaskForm
@@ -226,7 +226,7 @@ class TaskTab(QWidget):
             self.list.takeItem(self.list.currentRow())
             self.list.setCurrentRow(-1)
             #limpiar los campos
-            self.lblTitle.setText('Task title')
+            self.fldTitle.setText('')
             self.date.setDate(date.today())
             self.cbxPriority.setCurrentIndex(0)
             self.cbxStatus.setCurrentIndex(0)

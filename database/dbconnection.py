@@ -1,40 +1,104 @@
 from utils.config import DATABASE
-from utils.variables import STATUS, PRIORITIES
-from sqlalchemy import create_engine, insert, text
-from sqlalchemy.orm import sessionmaker
-from .schemas import metadata, status, prioprities
+import sqlite3
 
-#motor de base de datos
-engine = create_engine(DATABASE)
-
-#crear la seson
-SesionLocal = sessionmaker(autoflush=False, bind=engine)
-
-#sesion unica
-singlesession = None
-
-def start_db():
-    #motor global de bd
-    global engine
-    #crear las tablas
-    metadata.create_all(engine)
-    #prinsertar las prioridades y estatus
-    db = getSession()
-    db.execute(text("PRAGMA foreign_keys=on"))#activar llaves foraneas
-    stmt = insert(status).prefix_with("OR IGNORE").values([{"name":sts} for sts in STATUS.keys()])
-    db.execute(stmt)
-    stmt = insert(prioprities).prefix_with("OR IGNORE").values([{"name":pri} for pri in PRIORITIES.keys()])
-    db.execute(stmt)
-    db.commit()
-
-def getSession():
-    global singlesession
-    if not singlesession:
-        singlesession = SesionLocal()
-        return singlesession
-    else:
-        return singlesession
-
-def closeSession():
-    if singlesession:
-        singlesession.close()
+class DBConnector:
+    #insiancia unica
+    driver = None
+    #metodo constructor
+    def __init__(self)->None:
+        #atributos
+        self.con = sqlite3.connect(DATABASE)
+        cursor = self.con.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+        self.con.commit()
+        
+    #metodos de instancia
+    def close_connection(self)->None:
+        #cerrar la conexion si existe
+        if self.con: 
+            self.con.close()
+    
+    def select_from(self, table:str, condition:str = "", fields:list = ["*"])->list:
+        try:
+            #obtener cursor de conexion
+            cursor = self.con.cursor()
+            
+            #preparar el statement
+            stmt = "SELECT "+", ".join(fields) if len(fields) != 1 else "SELECT "+fields[0]
+            stmt += " FROM "+table
+            stmt += " WHERE "+condition+";" if condition != "" else ";"
+            
+            #ejecutar la sentencia y obtener datos
+            res = cursor.execute(stmt)
+            
+            return res.fetchall()
+        except sqlite3.Error as e:
+            return []
+        
+    def insert_into(self, values:list, table:str, fields:list = None)->bool:
+        try:
+            #obtener cursor de conexion
+            cursor = self.con.cursor()
+            
+            #preparar el statement
+            stmt = "INSERT INTO "+table+"("+", ".join(fields)+")" if fields else "INSERT INTO "+table
+            stmt += " VALUES ("+", ".join(["?" for val in values])+");"
+            
+            #ejecutar el statement 
+            cursor.execute(stmt,tuple(values))
+            
+            #cierre de transaccion
+            self.con.commit()
+            
+            #retornar verdadero
+            return True
+        except sqlite3.Error as e:
+            #retornar falso
+            return False
+        
+    def update_set(self, values:list, fields:list, table:str, condition:str)->bool:
+        try:
+            #obtener cursor de conexion
+            cursor = self.con.cursor()
+            
+            #preparar el statement
+            stmt = "UPDATE "+table+" SET "+"= ?, ".join(fields)+"= ? WHERE "+condition+";"
+            
+            #ejecutar el statement
+            cursor.execute(stmt, tuple(values))
+            
+            #cierre de transaccion
+            self.con.commit()
+            
+            #retornar verdadero
+            return True
+        except sqlite3.Error as e:
+            #retornar falso
+            return False
+        
+    def delete_from(self, table:str, condition:str)->bool:
+        try:
+            #obtener cursor de conexion
+            cursor = self.con.cursor()
+            
+            #preparar el statement
+            stmt = "DELETE FROM "+table+" WHERE "+condition+";"
+            
+            #ejecutar el statement
+            cursor.execute(stmt)
+            
+            #cierre de transaccion
+            self.con.commit()
+            
+            #retornar verdadero
+            return True
+        except sqlite3.Error as e:
+            #retornar falso
+            return False
+        
+#metodo de singleton
+def getInstance()->DBConnector:
+    #validar instancia
+    if DBConnector.driver:
+        return DBConnector.driver
+    return DBConnector()

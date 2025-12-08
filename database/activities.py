@@ -1,5 +1,3 @@
-from .schemas import task, activity
-from .transactions import getJoin, create, modify, drop
 from models.taskModels import Activity
 
 class ActivityApi:

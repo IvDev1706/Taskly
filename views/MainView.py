@@ -3,11 +3,11 @@ from PyQt6.QtGui import QIcon
 from .TaskView import TaskTab
 from .ProjectView import ProjectTab
 from .ActivityView import ActivityTab
-from .Observers import ProjectObserver
+from utils.observers import ProjectObserver
 from .Messages import error
-from utils.variables import FNTELEMENT
+from utils.constants import FNTELEMENT
 from utils.config import BASEDIR, VERSION
-from database.dbconnection import closeSession
+from database.dbconnection import getInstance
 import os
 
 #clase de ventana principal
@@ -23,16 +23,16 @@ class MainWindow(QWidget):
                 self.setStyleSheet(styles.read())
                 styles.close()
         except OSError as e:
-            pass
+            error(self,"Error",e.strerror)
         
         #componentes
         self.tabBar = QTabWidget(self)
         self.taskTab = TaskTab(self.tabBar)
         self.progress = ProjectObserver()
-        self.projectTab = ProjectTab(self.tabBar, self.progress)
-        self.activityTab = ActivityTab(self.tabBar, self.progress)
-        self.progress.attachObservable(self.activityTab)
-        self.progress.attachObservable(self.projectTab)
+        #self.projectTab = ProjectTab(self.tabBar, self.progress)
+        #self.activityTab = ActivityTab(self.tabBar, self.progress)
+        #self.progress.attachObservable(self.activityTab)
+        #self.progress.attachObservable(self.projectTab)
         
         #configuraciones
         self.__config()
@@ -58,8 +58,8 @@ class MainWindow(QWidget):
     def __build(self)->None:
         #adiciones al tab
         self.tabBar.addTab(self.taskTab, "Tareas")
-        self.tabBar.addTab(self.projectTab, "Proyectos")
-        self.tabBar.addTab(self.activityTab, "Actividades")
+        #self.tabBar.addTab(self.projectTab, "Proyectos")
+        #self.tabBar.addTab(self.activityTab, "Actividades")
     
     def __listenings(self)->None:
         self.tabBar.currentChanged.connect(self.onChange)
@@ -71,14 +71,18 @@ class MainWindow(QWidget):
             self.taskTab.clearSelection()
         elif index == 1:
             #limpiar seleccion en project
-            self.projectTab.clearSelection()
+            #self.projectTab.clearSelection()
+            pass
         else:
             #limpiar seleccion en activity
-            self.activityTab.clearSelection()
+            #self.activityTab.clearSelection()
+            pass
     
     def closeEvent(self, a0):
+        #obtener conexion
+        con = getInstance()
         #cierre de sesion
-        closeSession()
+        con.close_connection()
         #cierre formal
         super().closeEvent(a0)
         

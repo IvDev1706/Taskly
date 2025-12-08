@@ -1,5 +1,3 @@
-from .schemas import project
-from .transactions import getKeys, getInfo, create, drop, modify
 from models.ProjectModels import Project
 
 class ProjectApi:

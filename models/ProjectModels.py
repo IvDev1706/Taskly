@@ -11,5 +11,5 @@ class Project:
         self.status = status
         
     #paso a diccioinario
-    def asDict(self)->dict:
-        return {"id":self.id, "name":self.name, "desc":self.desc, "delivery":self.delivery, "status":self.status}
+    def asRow(self)->list:
+        return [self.id,self.name,self.desc,self.delivery.strftime("%Y-%m-%d"),self.status]

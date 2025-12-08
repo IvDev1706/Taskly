@@ -16,7 +16,7 @@ with open(os.path.join(BASEDIR,'assets','config','cfg.json'),"r") as config:
     config.close()
     
 #configuracion de bd
-DATABASE = "sqlite:///"+os.path.join(BASEDIR, cfgdata["database"]["filename"])
+DATABASE = os.path.join(BASEDIR, cfgdata["database"]["filename"])
 
 #version de la aplicacion
 VERSION = cfgdata['version']

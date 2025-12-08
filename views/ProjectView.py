@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit, QTableWidget, QTableWidgetItem)
-from utils.variables import STATUS, FNTTEXTO, FNTTITLE, FNTELEMENT
+from utils.constants import STATUS, FNTTEXTO, FNTTITLE, FNTELEMENT
 from .Messages import warning, info, error
 from datetime import date
 from .Dialogs import ProjectForm
-from .Observers import ProjectObserver
+from utils.observers import ProjectObserver
 from database.projects import ProjectApi
 from utils.config import BASEDIR
 from models.ProjectModels import Project

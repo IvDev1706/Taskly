@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QGridLayout, QHBoxLayout, QListWidget, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit)
-from utils.variables import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
-from .Observers import ProjectObserver
+from utils.constants import STATUS, PRIORITIES, FNTTEXTO, FNTTITLE, FNTELEMENT
+from utils.observers import ProjectObserver
 from .Dialogs import ActivityForm
 from .Messages import info, warning, error
 from models.taskModels import Activity

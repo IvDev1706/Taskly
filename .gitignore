@@ -5,3 +5,4 @@
 /dist/
 /build/
 /taskly.db
+/taskly_env

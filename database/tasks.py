@@ -12,7 +12,7 @@ class TaskApi:
         data = con.select_from(SIMPLETASKTABLE,fields=[TASKCOLUMNS[0]])
         return [row[0] for row in data]
     
-    def getTask(self, id:str)->SimpleTask | None:
+    def getTask(self, id:str)->SimpleTask:
         #obtener conexion
         con = getInstance()
         data = con.select_from("Full"+SIMPLETASKTABLE,condition=TASKCOLUMNS[0]+"='"+id+"'")[0]

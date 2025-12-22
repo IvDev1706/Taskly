@@ -6,6 +6,7 @@ class ProjectObserver:
         
         #datos transitivos
         self.id = ""
+        self.deleted = False
         self.noActs = 0
         self.adv = 0
         self.end = 0

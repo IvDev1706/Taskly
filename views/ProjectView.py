@@ -151,6 +151,14 @@ class ProjectTab(QWidget):
     
     #metodo de observer
     def update(self)->None:
+        #si se elimino no hacer nada
+        if self.progress.deleted:
+            #limpiar la tabla
+            self.projectTable.setItem(0,0,QTableWidgetItem("0"))
+            self.projectTable.setItem(0,1,QTableWidgetItem("0"))
+            self.projectTable.setItem(0,2,QTableWidgetItem("0"))
+            self.projectTable.setItem(0,3,QTableWidgetItem("0%"))
+            return
         #calcular porcentaje de trabajo
         work = 0 if self.progress.noActs == 0 else (self.progress.end/self.progress.noActs)*100
         #poner las estadisticas
@@ -250,6 +258,9 @@ class ProjectTab(QWidget):
             #resetear el current
             self.current = None
             info(self, "Proyecto eliminado","El proyecto se ha eliminado")
+            #actualizar observer
+            self.progress.deleted = True
+            self.progress.notify()
         else:
             #mensaje de error
             error(self,"Proyecto no eliminado","No se ha eliminado el proyecto")

@@ -149,6 +149,14 @@ class ActivityTab(QWidget):
         #limpiar items
         self.list.clear()
         
+        #si se elimino, no agregar nada
+        if self.progress.deleted:
+            #eliminar de la base de datos
+            for act in self.acts:
+                #eliminar actividad
+                self.api.deleteActivity(act.id)
+            return
+        
         #poner nuevos items
         self.acts = self.api.getActivities(self.progress.id)
         

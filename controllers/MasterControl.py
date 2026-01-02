@@ -1,7 +1,7 @@
 from .TaskControl import TaskController
 from .ProjectControl import ProjectController
 from .ActivityControl import ActivityController
-from views import MainWindow
+from views import MainWindow, CalendarTab
 from utils.observers import ProjectObserver
 
 class MasterController:
@@ -26,6 +26,7 @@ class MasterController:
         self.pobserver.attachObservable(self.acontroller)
         
         #añadir tabs
+        self.view.tabBar.addTab(CalendarTab(),"Agenda")
         self.view.tabBar.addTab(self.tcontroller.view,"Tareas")
         self.view.tabBar.addTab(self.pcontroller.view,"Proyectos")
         self.view.tabBar.addTab(self.acontroller.view,"Actividades")

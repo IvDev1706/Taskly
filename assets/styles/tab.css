@@ -13,16 +13,16 @@ QListWidget::item:active {
     background-color: #ddd;
 }
 
-QLabel#task-label {
+QLabel#tab-label {
     color: #000;
 }
 
-QPushButton#task-button {
+QPushButton#tab-button {
     background-color: #048;
     border: 2px solid #037;
 }
 
-QPushButton#task-button:hover {
+QPushButton#tab-button:hover {
     background-color: #059;
     border-color: #048;
 }

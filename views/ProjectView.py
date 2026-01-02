@@ -46,13 +46,13 @@ class ProjectTab(QWidget):
         #configuracion de etiquetas
         self.lblName.setText("Project name")
         self.lblName.setFont(FNTTITLE)
-        self.lblName.setObjectName("task-label")
+        self.lblName.setObjectName("tab-label")
         self.lblDelivery.setText("Project delivery")
         self.lblDelivery.setFont(FNTTITLE)
-        self.lblDelivery.setObjectName("task-label")
+        self.lblDelivery.setObjectName("tab-label")
         self.lblStatus.setText("Project status")
         self.lblStatus.setFont(FNTTITLE)
-        self.lblStatus.setObjectName("task-label")
+        self.lblStatus.setObjectName("tab-label")
         
         #configuracion de campos
         self.list.setFont(FNTELEMENT)
@@ -78,19 +78,19 @@ class ProjectTab(QWidget):
         
         #configuracion de botones
         self.btnCreate.setText('+')
-        self.btnCreate.setObjectName('task-button')
+        self.btnCreate.setObjectName('tab-button')
         self.btnCreate.setFont(FNTTEXTO)
         self.btnDelete.setText("-")
-        self.btnDelete.setObjectName("task-button")
+        self.btnDelete.setObjectName("tab-button")
         self.btnDelete.setFont(FNTTEXTO)
         self.btnEdit.setText("edit")
-        self.btnEdit.setObjectName("task-button")
+        self.btnEdit.setObjectName("tab-button")
         self.btnEdit.setFont(FNTTEXTO)
         self.btnSave.setText("save")
-        self.btnSave.setObjectName("task-button")
+        self.btnSave.setObjectName("tab-button")
         self.btnSave.setFont(FNTTEXTO)
         self.btnComplete.setText("complete")
-        self.btnComplete.setObjectName("task-button")
+        self.btnComplete.setObjectName("tab-button")
         self.btnComplete.setFont(FNTTEXTO)
     
     def __build(self)->None:

@@ -48,13 +48,13 @@ class ActivityTab(QWidget):
         
         #etiquetas
         self.lblTitle.setText("Activity project")
-        self.lblTitle.setObjectName("task-label")
+        self.lblTitle.setObjectName("tab-label")
         self.lblTitle.setFont(FNTTITLE)
         self.lblPriority.setText("Activity priority")
-        self.lblPriority.setObjectName("task-label")
+        self.lblPriority.setObjectName("tab-label")
         self.lblPriority.setFont(FNTTITLE)
         self.lblStatus.setText("Activity status")
-        self.lblStatus.setObjectName("task-label")
+        self.lblStatus.setObjectName("tab-label")
         self.lblStatus.setFont(FNTTITLE)
         
         #campos
@@ -71,19 +71,19 @@ class ActivityTab(QWidget):
         
         #botones
         self.btnCreate.setText("+")
-        self.btnCreate.setObjectName("task-button")
+        self.btnCreate.setObjectName("tab-button")
         self.btnCreate.setFont(FNTTEXTO)
         self.btnDelete.setText("-")
-        self.btnDelete.setObjectName("task-button")
+        self.btnDelete.setObjectName("tab-button")
         self.btnDelete.setFont(FNTTEXTO)
         self.btnEdit.setText("edit")
-        self.btnEdit.setObjectName("task-button")
+        self.btnEdit.setObjectName("tab-button")
         self.btnEdit.setFont(FNTTEXTO)
         self.btnSave.setText("save")
-        self.btnSave.setObjectName("task-button")
+        self.btnSave.setObjectName("tab-button")
         self.btnSave.setFont(FNTTEXTO)
         self.btnComplete.setText("complete")
-        self.btnComplete.setObjectName("task-button")
+        self.btnComplete.setObjectName("tab-button")
         self.btnComplete.setFont(FNTTEXTO)
         
     def __build(self)->None:

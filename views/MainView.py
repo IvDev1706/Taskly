@@ -1,9 +1,5 @@
 from PyQt6.QtWidgets import (QWidget, QTabWidget)
 from PyQt6.QtGui import QIcon
-from .TaskView import TaskTab
-from .ProjectView import ProjectTab
-from .ActivityView import ActivityTab
-from utils.observers import ProjectObserver
 from .Messages import error
 from utils.constants import FNTELEMENT
 from utils.config import BASEDIR, VERSION
@@ -27,21 +23,9 @@ class MainWindow(QWidget):
         
         #componentes
         self.tabBar = QTabWidget(self)
-        self.taskTab = TaskTab(self.tabBar)
-        self.progress = ProjectObserver()
-        self.projectTab = ProjectTab(self.tabBar, self.progress)
-        self.activityTab = ActivityTab(self.tabBar, self.progress)
-        self.progress.attachObservable(self.activityTab)
-        self.progress.attachObservable(self.projectTab)
         
         #configuraciones
         self.__config()
-        
-        #armado
-        self.__build()
-        
-        #escuchas
-        self.__listenings()
         
     #metodos de ventana
     def __config(self)->None:
@@ -54,27 +38,6 @@ class MainWindow(QWidget):
         #configuracion del tabBar
         self.tabBar.setFixedSize(self.size())
         self.tabBar.setFont(FNTELEMENT)
-        
-    def __build(self)->None:
-        #adiciones al tab
-        self.tabBar.addTab(self.taskTab, "Tareas")
-        self.tabBar.addTab(self.projectTab, "Proyectos")
-        self.tabBar.addTab(self.activityTab, "Actividades")
-    
-    def __listenings(self)->None:
-        self.tabBar.currentChanged.connect(self.onChange)
-        
-    def onChange(self, index:int)->None:
-        #ver en que tab se cambio
-        if index == 0:
-            #limpiar seleccion en task
-            self.taskTab.clearSelection()
-        elif index == 1:
-            #limpiar seleccion en project
-            self.projectTab.clearSelection()
-        else:
-            #limpiar seleccion en activity
-            self.activityTab.clearSelection()
     
     def closeEvent(self, a0):
         #obtener conexion
@@ -82,6 +45,4 @@ class MainWindow(QWidget):
         #cierre de sesion
         con.close_connection()
         #cierre formal
-        super().closeEvent(a0)
-        
-        
+        super().closeEvent(a0)  

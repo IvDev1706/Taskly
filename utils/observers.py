@@ -11,6 +11,13 @@ class ProjectObserver:
         self.adv = 0
         self.end = 0
         
+    def clearData(self)->None:
+        self.id = ""
+        self.deleted = False
+        self.noActs = 0
+        self.adv = 0
+        self.end = 0
+        
     def attachObservable(self, o)->None:
         self.subjects.append(o)
         

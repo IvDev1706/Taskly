@@ -1,9 +1,9 @@
-from views.MainView import MainWindow
+from controllers import MasterController
 from PyQt6.QtWidgets import QApplication
 import sys
 
 #lanzar la ventana
 app = QApplication(sys.argv)
-main = MainWindow()
-main.show()
+main = MasterController()
+main.display()
 sys.exit(app.exec())

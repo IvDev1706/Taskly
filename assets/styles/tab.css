@@ -20,6 +20,7 @@ QLabel#tab-label {
 QPushButton#tab-button {
     background-color: #048;
     border: 2px solid #037;
+    color: #fff;
 }
 
 QPushButton#tab-button:hover {

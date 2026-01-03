@@ -1,0 +1,27 @@
+QLabel#calendar-label {
+    color: #000;
+}
+
+/* elementos de la barra */
+QPushButton#calendar-button, QSpinBox#calendar-spin, QComboBox#calendar-combo {
+    background-color: #048;
+    color: #fff;
+}
+
+/* elementos del calendario */
+QCalendarWidget#calendar QAbstractItemView {
+    background-color: #eee;
+    color: #222;
+    gridline-color: #048;
+}
+
+QCalendarWidget#calendar QAbstractItemView:disabled {
+    color: #555;
+}
+
+QCalendarWidget#calendar QAbstractItemView::item:selected {
+    background-color: #059;
+    color: #fff;
+
+}
+

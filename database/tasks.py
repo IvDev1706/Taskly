@@ -1,6 +1,6 @@
 from .metadata import TASKCOLUMNS, SIMPLETASKTABLE, TASKTABLE, SIMPLETASKCOLUMNS
 from .dbconnection import getInstance
-from models.taskModels import SimpleTask
+from models import SimpleTask
 from utils.constants import STATUS
 from datetime import datetime
 

@@ -1,6 +1,6 @@
 from .metadata import PROJECTCOLUMNS, PROJECTTABLE
 from .dbconnection import getInstance
-from models.ProjectModels import Project
+from models import Project
 from utils.constants import STATUS
 from datetime import datetime
 

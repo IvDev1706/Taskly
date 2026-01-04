@@ -1,7 +1,8 @@
 from .TaskControl import TaskController
 from .ProjectControl import ProjectController
 from .ActivityControl import ActivityController
-from views import MainWindow, CalendarTab
+from .CalendarControl import CalendarController
+from views import MainWindow
 from utils.observers import ProjectObserver
 
 class MasterController:
@@ -14,6 +15,8 @@ class MasterController:
         self.pobserver = ProjectObserver()
         
         #controladores
+        self.ccontroller = CalendarController()
+        self.ccontroller.view.setParent(self.view)
         self.tcontroller = TaskController()
         self.tcontroller.view.setParent(self.view)
         self.pcontroller = ProjectController(self.pobserver)
@@ -26,10 +29,10 @@ class MasterController:
         self.pobserver.attachObservable(self.acontroller)
         
         #añadir tabs
-        self.view.tabBar.addTab(CalendarTab(),"Agenda")
-        self.view.tabBar.addTab(self.tcontroller.view,"Tareas")
-        self.view.tabBar.addTab(self.pcontroller.view,"Proyectos")
-        self.view.tabBar.addTab(self.acontroller.view,"Actividades")
+        self.view.tabBar.addTab(self.ccontroller.view,"Schedule")
+        self.view.tabBar.addTab(self.tcontroller.view,"Tasks")
+        self.view.tabBar.addTab(self.pcontroller.view,"Projects")
+        self.view.tabBar.addTab(self.acontroller.view,"Activities")
         
         #vincular escuchas
         self.__connect_listenings()

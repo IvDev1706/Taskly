@@ -56,6 +56,7 @@ class CalendarTab(QWidget):
         self.year.setFont(FNTELEMENT)
         self.year.setObjectName("calendar-spin")
         self.year.setMaximum(9999)
+        self.year.setMinimum(0)
         self.year.setValue(dt.year)
         
         #componentes especiales

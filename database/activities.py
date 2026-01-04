@@ -1,8 +1,7 @@
 from .metadata import TASKCOLUMNS, ACTIVITYTABLE, TASKTABLE, ACTIVITYCOLUMNS
 from .dbconnection import getInstance
-from models.taskModels import Activity
+from models import Activity
 from utils.constants import STATUS
-from datetime import datetime
 
 class ActivityApi:
     #metodos de operacion

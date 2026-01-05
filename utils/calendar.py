@@ -2,6 +2,7 @@ from PyQt6.QtCore import QDate
 from PyQt6.QtGui import QColor
 from .constants import OVERDUEDAY, PENDINGDAY, ADVANCEDDAY, COMPLETEDDAY, STATUS, REVERSESTATUS
 from datetime import datetime
+from models import SimpleTask, Project
 
 class ClassifiedDay:
     ### Metodo constructor ###
@@ -60,7 +61,11 @@ class DayClassifier:
                 #contar estatus
                 stats[p.status] += 1
                 #añadir al tooltip
-                tooltips.append(f"{p.id} - {p.title} ({REVERSESTATUS[p.status-1]})")
+                try:
+                    tooltips.append(f"{p.id} - {p.title} ({REVERSESTATUS[p.status-1]})")
+                except AttributeError as e:
+                    tooltips.append(f"{p.id} - {p.name} ({REVERSESTATUS[p.status-1]})")
+            #definir tooltips
             cday.tooltip = self.__getTooltip(tooltips)
             #mapear color
             cday.color = self.__mapColor(stats, day[0].delivery)

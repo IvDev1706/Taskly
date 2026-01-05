@@ -4,12 +4,12 @@ from models import Project
 from views import ProjectTab
 from views.Messages import info, error, warning
 from utils.constants import STATUS
-from utils.observers import ProjectObserver
+from utils.observers import ProjectObserver, CalendarObserver
 from datetime import date
 
 class ProjectController:
     ### Metodo constructor ###
-    def __init__(self, progress:ProjectObserver)->None:
+    def __init__(self, progress:ProjectObserver, cal:CalendarObserver)->None:
         #objetos de vista y bd
         self.view = ProjectTab()
         self.dbapi = ProjectApi()
@@ -21,6 +21,7 @@ class ProjectController:
         self.editing = False
         self.current = None
         self.progress = progress
+        self.cal = cal
         
         #vincular escuchas
         self.__connect_listenings()
@@ -103,10 +104,12 @@ class ProjectController:
                 self.view.list.addItem(newProject.id)
                 #mensaje de exito
                 info(self.view,"Projecto creado","El projecto ha sido creado con exito")
+                #notificar al observer de calendario
+                self.cal.current = newProject
+                self.cal.notify()
             else:
                 #mensaje de error
                 error(self.view,"Proyecto no creado","No se ha creado el proyecto")
-            del newProject
         
     def deleteP(self)->None:
         #validar que haya una seleccion
@@ -134,11 +137,13 @@ class ProjectController:
             self.view.projectTable.setItem(0,2,QTableWidgetItem("0"))
             self.view.projectTable.setItem(0,3,QTableWidgetItem("0%"))
             #resetear el current
+            self.cal.current = self.current
             self.current = None
             info(self.view, "Proyecto eliminado","El proyecto se ha eliminado")
             #actualizar observer
             self.progress.deleted = True
             self.progress.notify()
+            self.cal.notify()
         else:
             #mensaje de error
             error(self.view,"Proyecto no eliminado","No se ha eliminado el proyecto")
@@ -182,6 +187,9 @@ class ProjectController:
         if self.dbapi.updateProject(self.current):
                 #mensaje de exito
                 info(self.view, "Proyecto actualizado", "El proyecto se ha actualizado")
+                #actualizar calendario
+                self.cal.current = self.current
+                self.cal.notify()
         else:
             #mensaje de error
             error(self.view,"Proyecto no actualizado","No se ha actualizado el proyecto")
@@ -215,6 +223,9 @@ class ProjectController:
             self.view.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
             #mensaje de exito
             info(self.view, "Proyecto completado", "El proyecto se marco como terminado")
+            #actualizar observer
+            self.cal.current = self.current
+            self.cal.notify()
         else:
             #mensaje de error
             error(self.view,"Proyecto no completado","No se ha completado el proyecto")

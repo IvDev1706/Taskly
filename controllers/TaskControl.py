@@ -4,10 +4,11 @@ from database import TaskApi
 from models import SimpleTask
 from datetime import date
 from utils.constants import STATUS, PRIORITIES
+from utils.observers import CalendarObserver
 
 class TaskController:
     ### metodo constructor ###
-    def __init__(self)->None:
+    def __init__(self, ob:CalendarObserver)->None:
         #objetos de vista y de base de datos
         self.dbapi = TaskApi()
         self.view = TaskTab()
@@ -18,6 +19,7 @@ class TaskController:
         #atributos
         self.current = None
         self.editing = False
+        self.ob = ob
         
         #vincular escuchas
         self.__connect_listenings()
@@ -73,7 +75,10 @@ class TaskController:
                 self.view.list.addItem(newTask.id)
                 #mensaje de exito
                 info(self.view, "Tarea creada", "La tarea ha sido creada")
-            del newTask
+                #actualizar observer
+                self.ob.current = newTask
+                #notificar al calendario
+                self.ob.notify()
         else:
             #mensaje de error
             error(self.view,"Tarea no creada","No se ha creado la tarea")
@@ -101,8 +106,11 @@ class TaskController:
             self.view.cbxStatus.setCurrentIndex(0)
             self.view.descText.setText('')
             #quitar referencia
+            self.ob.current = self.current
             self.current = None
             info(self.view, "Tarea eliminada","La tarea se ha eliminado")
+            #notificar al observer
+            self.ob.notify()
         else:
             #mensaje de error
             error(self.view,"Tarea no eliminada","No se ha creado la tarea")
@@ -154,6 +162,9 @@ class TaskController:
         if self.dbapi.updateTask(self.current):
             #mensaje de exito
             info(self.view, "Tarea actualizada", "La tarea se ha actualizado")
+            #actualizar en observer
+            self.ob.current = self.current
+            self.ob.notify()
         else:
             #mensaje de error
             error(self.view,"Tarea no actualizada","No se ha actualizado la tarea")
@@ -182,6 +193,9 @@ class TaskController:
             self.view.cbxStatus.setCurrentIndex(STATUS["terminada"]-1)
             #mensaje de exito
             info(self.view, "Tarea completada", "La tarea se marco como terminada")
+            #actualizar en observer
+            self.ob.current = self.current
+            self.ob.notify()
         else:
             #mensaje de error
             error(self.view,"Tarea no completada","No se ha completado la tarea")

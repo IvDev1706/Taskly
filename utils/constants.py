@@ -1,4 +1,4 @@
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QColor
 from .config import FNTTITLECFG, FNTTEXTOCFG, FNTELEMENTCFG
 
 #fuentes
@@ -23,3 +23,27 @@ STATUS = {
     "terminada": 3,
 }
 
+#mapeo inverso
+REVERSESTATUS = ["no iniciada","avanzada","terminada"]
+
+#meses del año
+MONTHS = [
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre"
+]
+
+#colores de calendario
+OVERDUEDAY = QColor("#ff3322")
+PENDINGDAY = QColor("#555555")
+ADVANCEDDAY = QColor("#3355ff")
+COMPLETEDDAY = QColor("#33ff55")

@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QCalendarWidget, QLabel, QPushButton, QComboBox, QSpinBox)
 from PyQt6.QtCore import Qt
-from utils.constants import FNTTITLE, FNTTEXTO, FNTELEMENT
+from utils.constants import FNTTITLE, FNTTEXTO, FNTELEMENT, MONTHS
 from utils.config import BASEDIR
 from datetime import date
 import os
@@ -49,7 +49,7 @@ class CalendarTab(QWidget):
         
         #campos
         dt = date.today()
-        self.month.addItems(["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"])
+        self.month.addItems(MONTHS)
         self.month.setFont(FNTELEMENT)
         self.month.setObjectName("calendar-combo")
         self.month.setCurrentIndex(dt.month-1)

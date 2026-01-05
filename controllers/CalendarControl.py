@@ -1,17 +1,43 @@
+
+from PyQt6.QtGui import QTextCharFormat, QColor
 from views import CalendarTab
+from database import CalendarApi
+from utils.calendar import DayClassifier
 
 class CalendarController:
     ### Metodo constructor ###
     def __init__(self)->None:
         #objetos de vista y bd
         self.view = CalendarTab()
+        self.dbapi = CalendarApi()
         
         #atributos
         self.current_month = self.view.month.currentIndex() + 1
         self.current_year = self.view.year.value()
         
+        #poner fechas en el calendario
+        self.clf = DayClassifier(self.dbapi.getTasksByDate(self.current_month, self.current_year),self.dbapi.getProjectsByDate(self.current_month, self.current_year))
+        self.__display_dates()
+        
         #metodo de escuchas principal
         self.__connect_listenings()
+        
+    ### Metodo para desplegar fechas ###
+    def __display_dates(self)->None:
+        #contenedores
+        fmt = None
+        
+        #iterar en dias
+        for day in self.clf.classified:
+            #instanciar un nuevo formato
+            fmt = QTextCharFormat()
+            fmt.setForeground(QColor("#ffffff"))
+            fmt.setBackground(day.color)
+            fmt.setToolTip(day.tooltip)
+            
+            #añadir al calendario
+            self.view.calendar.setDateTextFormat(day.date,fmt)
+        
         
     ### Metodo principal de escuchas ###
     def __connect_listenings(self)->None:
